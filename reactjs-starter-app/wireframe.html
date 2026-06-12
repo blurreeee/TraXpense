@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wireframe — Expense Tracker</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 24px;
+      gap: 12px;
+      min-height: 100vh;
+    }
+
+    .label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #888;
+    }
+
+    /* ── App Shell ── */
+    .shell {
+      width: 100%;
+      max-width: 1100px;
+      height: 680px;
+      border: 2px dashed #bbb;
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+
+    /* ── Header ── */
+    .header {
+      height: 56px;
+      border-bottom: 2px dashed #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      background: #fafafa;
+      flex-shrink: 0;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-box {
+      width: 32px;
+      height: 32px;
+      border: 2px dashed #aaa;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: #999;
+      font-weight: 600;
+    }
+
+    .app-name {
+      width: 100px;
+      height: 16px;
+      border: 2px dashed #ccc;
+      border-radius: 4px;
+    }
+
+    .avatar {
+      width: 34px;
+      height: 34px;
+      border: 2px dashed #aaa;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: #999;
+    }
+
+    /* ── Body (sidebar + content) ── */
+    .body {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 200px;
+      border-right: 2px dashed #ccc;
+      padding: 20px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex-shrink: 0;
+      background: #fafafa;
+    }
+
+    .nav-item {
+      height: 40px;
+      border: 2px dashed #ccc;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      gap: 10px;
+      color: #aaa;
+      font-size: 12px;
+    }
+
+    .nav-item.active {
+      border-color: #999;
+      background: #f0f0f0;
+      color: #555;
+    }
+
+    .nav-icon {
+      width: 16px;
+      height: 16px;
+      border: 2px dashed #bbb;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    .nav-label {
+      width: 70px;
+      height: 10px;
+      border: 2px dashed #ccc;
+      border-radius: 3px;
+    }
+
+    /* ── Content ── */
+    .content {
+      flex: 1;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      overflow: auto;
+      background: #f7f7f7;
+    }
+
+    .page-title {
+      width: 160px;
+      height: 20px;
+      border: 2px dashed #ccc;
+      border-radius: 4px;
+    }
+
+    .page-subtitle {
+      width: 240px;
+      height: 12px;
+      border: 2px dashed #ddd;
+      border-radius: 3px;
+      margin-top: 6px;
+    }
+
+    .cards-row {
+      display: flex;
+      gap: 16px;
+    }
+
+    .card {
+      flex: 1;
+      border: 2px dashed #ccc;
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: #fff;
+    }
+
+    .card-label {
+      width: 80px;
+      height: 10px;
+      border: 2px dashed #ddd;
+      border-radius: 3px;
+    }
+
+    .card-value {
+      width: 110px;
+      height: 22px;
+      border: 2px dashed #ccc;
+      border-radius: 4px;
+    }
+
+    .chart-card {
+      flex: 1;
+      border: 2px dashed #ccc;
+      border-radius: 10px;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chart-header {
+      height: 40px;
+      border-bottom: 2px dashed #eee;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chart-header-label {
+      width: 120px;
+      height: 12px;
+      border: 2px dashed #ddd;
+      border-radius: 3px;
+    }
+
+    .chart-body {
+      flex: 1;
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      padding: 16px;
+    }
+
+    .bar {
+      flex: 1;
+      border: 2px dashed #ccc;
+      border-radius: 4px 4px 0 0;
+      background: #f3f3f3;
+    }
+
+    /* ── Annotations ── */
+    .annotations {
+      width: 100%;
+      max-width: 1100px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .annotation {
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+
+    .annotation .zone {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #6366f1;
+      margin-bottom: 4px;
+    }
+
+    .annotation p {
+      font-size: 12px;
+      color: #555;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+  <span class="label">Wireframe — Expense Tracker (Dashboard view)</span>
+
+  <!-- App Shell -->
+  <div class="shell">
+
+    <!-- Header -->
+    <div class="header">
+      <div class="header-left">
+        <div class="logo-box">Logo</div>
+        <div class="app-name"></div>
+      </div>
+      <div class="avatar">AB</div>
+    </div>
+
+    <!-- Body -->
+    <div class="body">
+
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="nav-item active">
+          <div class="nav-icon"></div>
+          <div class="nav-label"></div>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon"></div>
+          <div class="nav-label"></div>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="content">
+
+        <div>
+          <div class="page-title"></div>
+          <div class="page-subtitle"></div>
+        </div>
+
+        <!-- Stat cards -->
+        <div class="cards-row">
+          <div class="card">
+            <div class="card-label"></div>
+            <div class="card-value"></div>
+          </div>
+          <div class="card">
+            <div class="card-label"></div>
+            <div class="card-value"></div>
+          </div>
+          <div class="card">
+            <div class="card-label"></div>
+            <div class="card-value"></div>
+          </div>
+        </div>
+
+        <!-- Chart placeholder -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <div class="chart-header-label"></div>
+          </div>
+          <div class="chart-body">
+            <div class="bar" style="height:55%"></div>
+            <div class="bar" style="height:80%"></div>
+            <div class="bar" style="height:40%"></div>
+            <div class="bar" style="height:90%"></div>
+            <div class="bar" style="height:65%"></div>
+            <div class="bar" style="height:70%"></div>
+            <div class="bar" style="height:50%"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Annotations -->
+  <div class="annotations">
+    <div class="annotation">
+      <div class="zone">Header</div>
+      <p>Fixed 56px tall. Logo box + app name on the left. User initials avatar (circle) on the right.</p>
+    </div>
+    <div class="annotation">
+      <div class="zone">Left Nav</div>
+      <p>200px wide sidebar. Two nav items: Dashboard (active state shown) and Expenses. Icon box + label per item.</p>
+    </div>
+    <div class="annotation">
+      <div class="zone">Content</div>
+      <p>Remaining width. Page title + subtitle row, then 3 stat cards, then a chart card that fills remaining height.</p>
+    </div>
+  </div>
+
+</body>
+</html>
