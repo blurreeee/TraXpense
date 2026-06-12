@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-const API_URL = 'http://localhost:8080/api/expenses'
+const API_URL = '/api/expenses'
 
 export function useExpenses() {
   const [expenses, setExpenses] = useState([])
