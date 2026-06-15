@@ -1,30 +1,40 @@
 // src/pages/LoginPage.jsx
 import { useState } from 'react';
-import { Form, Button, Select, Input, Typography, Switch } from 'antd';
+import { Form, Button, Input, Typography, Switch } from 'antd';
 import { AccountBookFilled, MoonOutlined, SunOutlined } from '@ant-design/icons';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 
-const { Title, Text } = Typography;
-const { Option } = Select;
+const { Title, Text, Link } = Typography;
 
 export function LoginPage() {
-  const { login, isAuthenticated } = useAuth();
+  const { login, register, isAuthenticated } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isRegistering, setIsRegistering] = useState(false);
 
   if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
   }
 
-  const onFinish = ({ username, password }) => {
+  const onFinishLogin = async ({ username, password }) => {
     setLoading(true);
     setError('');
-    const success = login(username, password);
-    if (!success) {
-      setError('Invalid credentials');
+    const result = await login(username, password);
+    if (!result.success) {
+      setError(result.error || 'Invalid credentials');
+    }
+    setLoading(false);
+  };
+
+  const onFinishRegister = async (values) => {
+    setLoading(true);
+    setError('');
+    const result = await register(values);
+    if (!result.success) {
+      setError(result.error || 'Registration failed');
     }
     setLoading(false);
   };
@@ -36,22 +46,59 @@ export function LoginPage() {
           <AccountBookFilled className="login-logo" />
           <Title level={3} className="login-title">TraXpenses</Title>
         </div>
-        <Form layout="vertical" onFinish={onFinish} style={{ width: '100%' }}>
-          <Form.Item name="username" label="Username" initialValue="Arjav" rules={[{ required: true }]}>
-            <Select placeholder="Select user">
-              <Option value="Arjav">Arjav</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item name="password" label="Password" rules={[{ required: true }]}>
-            <Input.Password placeholder="Password" />
-          </Form.Item>
-          {error && <Text type="danger">{error}</Text>}
-          <Form.Item>
-            <Button type="primary" htmlType="submit" loading={loading} block>
-              Login
-            </Button>
-          </Form.Item>
-        </Form>
+        {!isRegistering ? (
+          <Form layout="vertical" onFinish={onFinishLogin} style={{ width: '100%' }}>
+            <Form.Item name="username" label="Username" rules={[{ required: true }]}>
+              <Input placeholder="Username" />
+            </Form.Item>
+            <Form.Item name="password" label="Password" rules={[{ required: true }]}>
+              <Input.Password placeholder="Password" />
+            </Form.Item>
+            
+            <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'flex-end' }}>
+              <Link href="#" onClick={(e) => { e.preventDefault(); /* For show */ }}>Forgot Password?</Link>
+            </div>
+
+            {error && <Text type="danger" style={{ display: 'block', marginBottom: 16 }}>{error}</Text>}
+            
+            <Form.Item>
+              <Button type="primary" htmlType="submit" loading={loading} block>
+                Login
+              </Button>
+            </Form.Item>
+            <div style={{ textAlign: 'center' }}>
+              <Text>Don't have an account? </Text>
+              <Link onClick={() => { setIsRegistering(true); setError(''); }}>Register</Link>
+            </div>
+          </Form>
+        ) : (
+          <Form layout="vertical" onFinish={onFinishRegister} style={{ width: '100%' }}>
+            <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+              <Input placeholder="Full Name" />
+            </Form.Item>
+            <Form.Item name="username" label="Username" rules={[{ required: true }]}>
+              <Input placeholder="Username" />
+            </Form.Item>
+            <Form.Item name="email" label="Email" rules={[{ required: true, type: 'email' }]}>
+              <Input placeholder="Email" />
+            </Form.Item>
+            <Form.Item name="password" label="Password" rules={[{ required: true, min: 6 }]}>
+              <Input.Password placeholder="Password" />
+            </Form.Item>
+            
+            {error && <Text type="danger" style={{ display: 'block', marginBottom: 16 }}>{error}</Text>}
+            
+            <Form.Item>
+              <Button type="primary" htmlType="submit" loading={loading} block>
+                Register
+              </Button>
+            </Form.Item>
+            <div style={{ textAlign: 'center' }}>
+              <Text>Already have an account? </Text>
+              <Link onClick={() => { setIsRegistering(false); setError(''); }}>Login</Link>
+            </div>
+          </Form>
+        )}
         <div className="theme-toggle-wrapper">
           <Switch
             checked={isDark}

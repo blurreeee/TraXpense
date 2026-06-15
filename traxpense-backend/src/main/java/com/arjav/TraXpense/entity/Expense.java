@@ -25,6 +25,9 @@ public class Expense {
     @Column(length = 500)
     private String note;
 
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
@@ -45,6 +48,8 @@ public class Expense {
     }
 
     public Long getId() { return id; }
+    public Long getUserId() { return userId; }
+    public void setUserId(Long userId) { this.userId = userId; }
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
     public BigDecimal getAmount() { return amount; }

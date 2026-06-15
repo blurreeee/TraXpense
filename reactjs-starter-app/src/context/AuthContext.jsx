@@ -29,14 +29,48 @@ export function AuthProvider({ children }) {
     } catch {}
   }, [authState]);
 
-  function login(username, password) {
-    // Hard‑coded credentials
-    if (username === 'Arjav' && password === 'Arjav123') {
-      setAuthState({ isAuthenticated: true, user: { name: 'Arjav' } });
-      navigate('/dashboard', { replace: true });
-      return true;
+  async function login(username, password) {
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      if (response.ok) {
+        const user = await response.json();
+        setAuthState({ isAuthenticated: true, user });
+        navigate('/dashboard', { replace: true });
+        return { success: true };
+      } else {
+        const errorText = await response.text();
+        return { success: false, error: errorText };
+      }
+    } catch (err) {
+      console.error('Login error:', err);
+      return { success: false, error: 'Network error occurred' };
     }
-    return false;
+  }
+
+  async function register(userData) {
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData)
+      });
+      if (response.ok) {
+        const user = await response.json();
+        setAuthState({ isAuthenticated: true, user });
+        navigate('/dashboard', { replace: true });
+        return { success: true };
+      } else {
+        const errorText = await response.text();
+        return { success: false, error: errorText };
+      }
+    } catch (err) {
+      console.error('Registration error:', err);
+      return { success: false, error: 'Network error occurred' };
+    }
   }
 
   function logout() {
@@ -50,6 +84,7 @@ export function AuthProvider({ children }) {
         isAuthenticated: authState.isAuthenticated,
         user: authState.user,
         login,
+        register,
         logout,
       }}
     >

@@ -3,6 +3,7 @@ import { Typography, Button, Select, Space, message } from 'antd'
 import { PlusOutlined, FilterOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import { useExpenses } from '../hooks/useExpenses'
+import { useAuth } from '../context/AuthContext'
 import { ExpenseModal } from '../components/ExpenseModal'
 import { ExpenseList } from '../components/ExpenseList'
 
@@ -25,7 +26,8 @@ const MONTHS = [
 ]
 
 export function ExpensesPage() {
-  const { expenses, addExpense, updateExpense, deleteExpense } = useExpenses()
+  const { user } = useAuth()
+  const { expenses, addExpense, updateExpense, deleteExpense } = useExpenses(user?.id)
   const [modalOpen, setModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState('add')
   const [selectedExpense, setSelectedExpense] = useState(null)
@@ -61,12 +63,17 @@ export function ExpensesPage() {
     setModalOpen(true)
   }
 
-  function handleSave(fields) {
+  async function handleSave(fields) {
     if (modalMode === 'add') {
-      addExpense(fields)
-      messageApi.success('Expense added successfully!')
+      const result = await addExpense(fields)
+      if (result) {
+        messageApi.success('Expense added successfully!')
+      } else {
+        messageApi.error('Failed to add expense. Please try again.')
+        return
+      }
     } else {
-      updateExpense(selectedExpense.id, fields)
+      await updateExpense(selectedExpense.id, fields)
       messageApi.success('Expense updated!')
     }
     setModalOpen(false)
@@ -84,7 +91,7 @@ export function ExpensesPage() {
 
       {/* Greeting */}
       <div className="greeting-section">
-        <Title level={2} className="greeting-title">Greetings, User</Title>
+        <Title level={2} className="greeting-title">Greetings, {user?.name || user?.username || 'User'}</Title>
         <Text className="greeting-sub">Manage and track your expenses below</Text>
       </div>
 

@@ -2,16 +2,16 @@ import { useState, useEffect } from 'react'
 
 const API_URL = '/api/expenses'
 
-export function useExpenses() {
+export function useExpenses(userId) {
   const [expenses, setExpenses] = useState([])
 
   useEffect(() => {
-    fetchExpenses()
-  }, [])
+    if (userId) fetchExpenses()
+  }, [userId])
 
   async function fetchExpenses() {
     try {
-      const response = await fetch(API_URL)
+      const response = await fetch(`${API_URL}?userId=${userId}`)
       if (response.ok) {
         const data = await response.json()
         setExpenses(data.sort((a, b) => b.id - a.id))
@@ -26,7 +26,7 @@ export function useExpenses() {
       const response = await fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(expenseData),
+        body: JSON.stringify({ ...expenseData, userId }),
       })
       if (response.ok) {
         const entry = await response.json()
@@ -34,9 +34,11 @@ export function useExpenses() {
         return entry
       } else {
         console.error('Failed to add expense:', await response.text())
+        return null
       }
     } catch (err) {
       console.error('Error adding expense:', err)
+      return null
     }
   }
 
@@ -45,7 +47,7 @@ export function useExpenses() {
       const response = await fetch(`${API_URL}/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(fields),
+        body: JSON.stringify({ ...fields, userId }),
       })
       if (response.ok) {
         const updated = await response.json()

@@ -16,8 +16,8 @@ public class ExpenseService {
         this.expenseRepository = expenseRepository;
     }
 
-    public List<Expense> getAllExpenses() {
-        return expenseRepository.findAllByOrderByCreatedAtDesc();
+    public List<Expense> getAllExpensesByUser(Long userId) {
+        return expenseRepository.findByUserIdOrderByCreatedAtDesc(userId);
     }
 
     public Expense getExpenseById(Long id) {
@@ -27,6 +27,7 @@ public class ExpenseService {
 
     public Expense createExpense(ExpenseDTO dto) {
         Expense expense = new Expense();
+        expense.setUserId(dto.getUserId());
         expense.setDescription(dto.getDescription());
         expense.setAmount(dto.getAmount());
         expense.setDate(dto.getDate());

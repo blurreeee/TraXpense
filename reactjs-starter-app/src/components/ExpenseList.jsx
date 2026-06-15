@@ -19,11 +19,11 @@ const PAGE_SIZE = 10
 
 /** Category visual config — icons from Ant Design, no emojis */
 const CATEGORY_CONFIG = {
-  Food:      { Icon: CoffeeOutlined,      color: '#059669', bg: 'rgba(5,150,105,0.12)'    },
-  Utilities: { Icon: ThunderboltOutlined, color: '#0891b2', bg: 'rgba(8,145,178,0.12)'    },
-  Travel:    { Icon: CarOutlined,         color: '#7c3aed', bg: 'rgba(124,58,237,0.12)'   },
-  Luxury:    { Icon: CrownOutlined,       color: '#db2777', bg: 'rgba(219,39,119,0.12)'   },
-  Misc:      { Icon: AppstoreOutlined,    color: '#d97706', bg: 'rgba(217,119,6,0.12)'    },
+  Food: { Icon: CoffeeOutlined, color: '#059669', bg: 'rgba(5,150,105,0.12)' },
+  Utilities: { Icon: ThunderboltOutlined, color: '#0891b2', bg: 'rgba(8,145,178,0.12)' },
+  Travel: { Icon: CarOutlined, color: '#7c3aed', bg: 'rgba(124,58,237,0.12)' },
+  Luxury: { Icon: CrownOutlined, color: '#db2777', bg: 'rgba(219,39,119,0.12)' },
+  Misc: { Icon: AppstoreOutlined, color: '#d97706', bg: 'rgba(217,119,6,0.12)' },
 }
 
 /**
@@ -32,7 +32,7 @@ const CATEGORY_CONFIG = {
  * Actual colours are defined in index.css via CSS variables, switching per theme.
  */
 function getAmountTierClass(amount) {
-  if (amount <= 500)  return 'amount-tier-1'
+  if (amount <= 500) return 'amount-tier-1'
   if (amount <= 1000) return 'amount-tier-2'
   if (amount <= 5000) return 'amount-tier-3'
   return 'amount-tier-4'
@@ -52,7 +52,7 @@ export function ExpenseList({ expenses, onRowClick }) {
 
   const sortedExpenses = useMemo(() => {
     let result = [...expenses]
-    
+
     if (amountSortOrder !== 'default') {
       result.sort((a, b) => {
         if (amountSortOrder === 'asc') return Number(a.amount) - Number(b.amount)
@@ -66,7 +66,7 @@ export function ExpenseList({ expenses, onRowClick }) {
         return dateB - dateA
       })
     }
-    
+
     return result
   }, [expenses, amountSortOrder, dateSortOrder])
 
@@ -149,7 +149,7 @@ export function ExpenseList({ expenses, onRowClick }) {
               key={item.id}
               title={tooltipContent}
               placement="top"
-              color="var(--bg-elevated)"
+              color="black"
               overlayClassName="expense-note-tooltip"
               mouseEnterDelay={0.15}
               mouseLeaveDelay={0.05}
