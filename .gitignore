@@ -4,3 +4,4 @@ target/
 .env
 build/
 dist/
+traxpense-backend/src/main/resources/static/

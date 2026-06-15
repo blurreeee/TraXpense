@@ -14,7 +14,8 @@ COPY . .
 RUN cd reactjs-starter-app && npm install && npm run build
 
 # Copy frontend build output to Spring Boot static resources
-RUN cp -r reactjs-starter-app/dist/* traxpense-backend/src/main/resources/static/
+RUN mkdir -p traxpense-backend/src/main/resources/static && \
+    cp -r reactjs-starter-app/dist/* traxpense-backend/src/main/resources/static/
 
 # Build the Spring Boot backend (now includes frontend static files)
 RUN cd traxpense-backend && mvn clean package -DskipTests
@@ -26,8 +27,9 @@ WORKDIR /app
 # Copy the built jar file from the build stage
 COPY --from=build /app/traxpense-backend/target/TraXpense-0.0.1-SNAPSHOT.jar app.jar
 
-# Expose port 8080
-EXPOSE 8080
+# Render sets PORT dynamically; default to 8080 for local use
+ENV PORT=8080
+EXPOSE ${PORT}
 
-# Run the jar file
+# Run the jar file, passing the PORT to Spring Boot
 ENTRYPOINT ["java", "-jar", "app.jar"]
