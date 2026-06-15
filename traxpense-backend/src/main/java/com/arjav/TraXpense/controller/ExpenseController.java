@@ -42,8 +42,8 @@ public class ExpenseController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        expenseService.deleteExpense(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id, @RequestParam Long userId) {
+        expenseService.deleteExpense(id, userId);
         return ResponseEntity.noContent().build();
     }
 }

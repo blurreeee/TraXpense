@@ -2,6 +2,7 @@ package com.arjav.TraXpense.service;
 
 import com.arjav.TraXpense.dto.ExpenseDTO;
 import com.arjav.TraXpense.entity.Expense;
+import com.arjav.TraXpense.exception.ResourceNotFoundException;
 import com.arjav.TraXpense.repository.ExpenseRepository;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,7 @@ public class ExpenseService {
 
     public Expense getExpenseById(Long id) {
         return expenseRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Expense not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Expense not found with id: " + id));
     }
 
     public Expense createExpense(ExpenseDTO dto) {
@@ -37,6 +38,9 @@ public class ExpenseService {
 
     public Expense updateExpense(Long id, ExpenseDTO dto) {
         Expense existing = getExpenseById(id);
+        if (!existing.getUserId().equals(dto.getUserId())) {
+            throw new RuntimeException("You do not have permission to update this expense");
+        }
         existing.setDescription(dto.getDescription());
         existing.setAmount(dto.getAmount());
         existing.setDate(dto.getDate());
@@ -44,8 +48,11 @@ public class ExpenseService {
         return expenseRepository.save(existing);
     }
 
-    public void deleteExpense(Long id) {
-        getExpenseById(id);
+    public void deleteExpense(Long id, Long userId) {
+        Expense existing = getExpenseById(id);
+        if (!existing.getUserId().equals(userId)) {
+            throw new RuntimeException("You do not have permission to delete this expense");
+        }
         expenseRepository.deleteById(id);
     }
 }

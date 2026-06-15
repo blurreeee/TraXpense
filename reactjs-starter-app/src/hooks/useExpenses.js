@@ -1,25 +1,25 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 const API_URL = '/api/expenses'
 
 export function useExpenses(userId) {
   const [expenses, setExpenses] = useState([])
 
-  useEffect(() => {
-    if (userId) fetchExpenses()
-  }, [userId])
-
-  async function fetchExpenses() {
+  const fetchExpenses = useCallback(async () => {
     try {
       const response = await fetch(`${API_URL}?userId=${userId}`)
       if (response.ok) {
         const data = await response.json()
-        setExpenses(data.sort((a, b) => b.id - a.id))
+        setExpenses(data)
       }
     } catch (err) {
       console.error('Error fetching expenses:', err)
     }
-  }
+  }, [userId])
+
+  useEffect(() => {
+    if (userId) fetchExpenses()
+  }, [userId, fetchExpenses])
 
   async function addExpense(expenseData) {
     try {
@@ -62,7 +62,7 @@ export function useExpenses(userId) {
 
   async function deleteExpense(id) {
     try {
-      const response = await fetch(`${API_URL}/${id}`, {
+      const response = await fetch(`${API_URL}/${id}?userId=${userId}`, {
         method: 'DELETE',
       })
       if (response.ok) {

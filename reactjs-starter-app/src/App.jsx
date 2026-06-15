@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { ConfigProvider, theme as antTheme } from 'antd'
 import { ThemeProvider, useTheme } from './context/ThemeContext'
@@ -68,7 +69,7 @@ function AppContent() {
   }
 
   // Injecting active item color globally via css for antd pagination as a fallback
-  if (typeof document !== 'undefined') {
+  useEffect(() => {
     const style = document.createElement('style')
     style.innerHTML = `
       .ant-pagination-item-active a {
@@ -76,7 +77,8 @@ function AppContent() {
       }
     `
     document.head.appendChild(style)
-  }
+    return () => document.head.removeChild(style)
+  }, [])
 
   return (
     <ConfigProvider theme={configTheme}>

@@ -42,8 +42,8 @@ export function AuthProvider({ children }) {
         navigate('/dashboard', { replace: true });
         return { success: true };
       } else {
-        const errorText = await response.text();
-        return { success: false, error: errorText };
+        const errorData = await response.json().catch(() => null);
+        return { success: false, error: errorData?.message || 'Login failed' };
       }
     } catch (err) {
       console.error('Login error:', err);
@@ -64,8 +64,8 @@ export function AuthProvider({ children }) {
         navigate('/dashboard', { replace: true });
         return { success: true };
       } else {
-        const errorText = await response.text();
-        return { success: false, error: errorText };
+        const errorData = await response.json().catch(() => null);
+        return { success: false, error: errorData?.message || 'Registration failed' };
       }
     } catch (err) {
       console.error('Registration error:', err);
