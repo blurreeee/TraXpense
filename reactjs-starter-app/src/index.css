@@ -620,7 +620,7 @@ body,
 
 .expense-item-inner {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: 70px 1fr 1fr auto;
   align-items: center;
   gap: 16px;
   padding: 14px 20px;
@@ -641,11 +641,12 @@ body,
 }
 
 .expense-col-index {
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .expense-col-amount {
   gap: 8px;
+  justify-content: flex-end;
 }
 
 .expense-col-sortable {

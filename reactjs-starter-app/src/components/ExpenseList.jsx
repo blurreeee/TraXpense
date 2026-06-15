@@ -103,7 +103,7 @@ export function ExpenseList({ expenses, onRowClick }) {
         </div>
       </div>
       <div
-        className="expense-col expense-col-sortable"
+        className="expense-col expense-col-sortable expense-col-amount"
         onClick={toggleAmountSort}
       >
         Amount
