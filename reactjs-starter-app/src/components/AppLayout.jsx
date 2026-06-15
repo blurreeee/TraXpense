@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Layout, Menu, Avatar, Typography, Button, Dropdown, Switch, Divider } from 'antd'
+import { Layout, Menu, Avatar, Typography, Button, Dropdown, Switch } from 'antd'
 import {
   DashboardOutlined,
   WalletOutlined,

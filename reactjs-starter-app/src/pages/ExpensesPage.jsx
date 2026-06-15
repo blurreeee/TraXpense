@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { Typography, Button, Select, Space, message } from 'antd'
+import { Typography, Button, Select, message } from 'antd'
 import { PlusOutlined, FilterOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import { useExpenses } from '../hooks/useExpenses'
