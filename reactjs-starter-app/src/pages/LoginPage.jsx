@@ -54,13 +54,9 @@ export function LoginPage() {
             <Form.Item name="password" label="Password" rules={[{ required: true }]}>
               <Input.Password placeholder="Password" />
             </Form.Item>
-            
-            <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'flex-end' }}>
-              <Link href="#" onClick={(e) => { e.preventDefault(); /* For show */ }}>Forgot Password?</Link>
-            </div>
 
             {error && <Text type="danger" style={{ display: 'block', marginBottom: 16 }}>{error}</Text>}
-            
+
             <Form.Item>
               <Button type="primary" htmlType="submit" loading={loading} block>
                 Login
@@ -85,9 +81,9 @@ export function LoginPage() {
             <Form.Item name="password" label="Password" rules={[{ required: true, min: 6 }]}>
               <Input.Password placeholder="Password" />
             </Form.Item>
-            
+
             {error && <Text type="danger" style={{ display: 'block', marginBottom: 16 }}>{error}</Text>}
-            
+
             <Form.Item>
               <Button type="primary" htmlType="submit" loading={loading} block>
                 Register
