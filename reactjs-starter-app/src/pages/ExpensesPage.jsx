@@ -113,17 +113,15 @@ export function ExpensesPage() {
             value={selectedMonth}
             onChange={setSelectedMonth}
             options={MONTHS}
-            style={{ width: 140 }}
-            size="large"
             className="month-filter"
+            size="large"
           />
           <Select
             value={selectedYear}
             onChange={setSelectedYear}
             options={availableYears}
-            style={{ width: 120 }}
-            size="large"
             className="year-filter"
+            size="large"
           />
         </div>
       </div>

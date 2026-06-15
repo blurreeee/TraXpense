@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Layout, Menu, Avatar, Typography, Button, Dropdown, Switch, Divider } from 'antd'
 import {
   DashboardOutlined,
@@ -24,12 +24,29 @@ const SIDER_COLLAPSED_WIDTH = 64
 export function AppLayout({ children }) {
   const [collapsed, setCollapsed] = useState(false)
   const [avatarPopoverOpen, setAvatarPopoverOpen] = useState(false)
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768)
+  const [mobileOpen, setMobileOpen] = useState(false)
   const { isDark, toggleTheme } = useTheme()
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
 
   const selectedKey = location.pathname.replace('/', '') || 'dashboard'
+
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth <= 768
+      setIsMobile(mobile)
+      if (!mobile) setMobileOpen(false)
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  // Close mobile sidebar on route change
+  useEffect(() => {
+    if (isMobile) setMobileOpen(false)
+  }, [location.pathname, isMobile])
 
   const menuItems = [
     { key: 'dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
@@ -83,21 +100,29 @@ export function AppLayout({ children }) {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
+      {/* ── Mobile Backdrop ── */}
+      {isMobile && mobileOpen && (
+        <div className="mobile-backdrop" onClick={() => setMobileOpen(false)} />
+      )}
+
       {/* ── Sidebar ── */}
       <Sider
         collapsible
-        collapsed={collapsed}
+        collapsed={isMobile ? false : collapsed}
         onCollapse={setCollapsed}
         trigger={null}
         width={SIDER_WIDTH}
-        collapsedWidth={SIDER_COLLAPSED_WIDTH}
-        className="app-sider"
+        collapsedWidth={isMobile ? SIDER_WIDTH : SIDER_COLLAPSED_WIDTH}
+        className={`app-sider${isMobile ? (mobileOpen ? ' mobile-open' : ' mobile-hidden') : ''}`}
       >
-        <div className="sider-logo" style={{ justifyContent: collapsed ? 'center' : 'space-between', padding: collapsed ? '20px 0 16px' : '20px 16px 16px' }}>
+        <div className="sider-logo" style={{ justifyContent: collapsed && !isMobile ? 'center' : 'space-between', padding: collapsed && !isMobile ? '20px 0 16px' : '20px 16px 16px' }}>
           <Button
             type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => setCollapsed(c => !c)}
+            icon={collapsed && !isMobile ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            onClick={() => {
+              if (isMobile) setMobileOpen(false)
+              else setCollapsed(c => !c)
+            }}
             className="collapse-btn"
             style={{ padding: 0 }}
           />
@@ -115,13 +140,23 @@ export function AppLayout({ children }) {
 
       <Layout
         style={{
-          marginLeft: collapsed ? SIDER_COLLAPSED_WIDTH : SIDER_WIDTH,
+          marginLeft: isMobile ? 0 : (collapsed ? SIDER_COLLAPSED_WIDTH : SIDER_WIDTH),
           transition: 'margin-left 0.2s cubic-bezier(0.4,0,0.2,1)',
         }}
       >
         {/* ── Fixed Header ── */}
         <Header className="app-header">
           <div className="header-left">
+            {/* Mobile hamburger */}
+            {isMobile && (
+              <Button
+                type="text"
+                icon={<MenuUnfoldOutlined />}
+                onClick={() => setMobileOpen(true)}
+                className="collapse-btn mobile-hamburger"
+                style={{ padding: 0, marginRight: 8 }}
+              />
+            )}
             <div className="header-logo">
               <AccountBookFilled className="logo-icon-header" />
               <Text className="header-brand">TraXpenses</Text>
