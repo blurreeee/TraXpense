@@ -43,9 +43,10 @@ function getAmountTierClass(amount) {
  *
  * Props:
  *   expenses    {Array}
+ *   loading     {boolean}
  *   onRowClick  {(expense) => void}
  */
-export function ExpenseList({ expenses, onRowClick }) {
+export function ExpenseList({ expenses, loading, onRowClick }) {
   const [currentPage, setCurrentPage] = useState(1)
   const [amountSortOrder, setAmountSortOrder] = useState('default')
   const [dateSortOrder, setDateSortOrder] = useState('desc') // Default sort by date
@@ -143,6 +144,7 @@ export function ExpenseList({ expenses, onRowClick }) {
   return (
     <div className="expense-list-wrapper">
       <List
+        loading={loading}
         header={listHeader}
         dataSource={pageItems}
         renderItem={(item, index) => {

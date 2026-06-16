@@ -34,7 +34,7 @@ const MONTHS = [
 
 export function ExpensesPage() {
   const { user } = useAuth()
-  const { expenses, addExpense, updateExpense, deleteExpense } = useExpenses(user?.id)
+  const { expenses, loading, addExpense, updateExpense, deleteExpense } = useExpenses(user?.id)
   const [modalOpen, setModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState('add')
   const [selectedExpense, setSelectedExpense] = useState(null)
@@ -57,6 +57,10 @@ export function ExpensesPage() {
     }
     return result
   }, [expenses, selectedMonth, selectedYear])
+
+  const grandTotal = useMemo(() => {
+    return filteredExpenses.reduce((sum, e) => sum + Number(e.amount), 0)
+  }, [filteredExpenses])
 
   function openAddModal() {
     setModalMode('add')
@@ -114,7 +118,10 @@ export function ExpensesPage() {
           Add Expense
         </Button>
 
-        <div className="action-bar-right">
+        <div className="action-bar-right" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div className="grand-total" style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-main)' }}>
+            Total: ₹{grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </div>
           <FilterOutlined className="filter-icon" />
           <Select
             value={selectedMonth}
@@ -134,7 +141,7 @@ export function ExpensesPage() {
       </div>
 
       {/* Expense List */}
-      <ExpenseList expenses={filteredExpenses} onRowClick={openEditModal} />
+      <ExpenseList expenses={filteredExpenses} loading={loading} onRowClick={openEditModal} />
 
       {/* Add / Edit Modal */}
       <ExpenseModal

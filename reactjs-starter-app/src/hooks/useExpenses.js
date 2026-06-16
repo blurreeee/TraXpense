@@ -4,8 +4,10 @@ const API_URL = '/api/expenses'
 
 export function useExpenses(userId) {
   const [expenses, setExpenses] = useState([])
+  const [loading, setLoading] = useState(true)
 
   const fetchExpenses = useCallback(async () => {
+    setLoading(true)
     try {
       const response = await fetch(`${API_URL}?userId=${userId}`)
       if (response.ok) {
@@ -14,11 +16,17 @@ export function useExpenses(userId) {
       }
     } catch (err) {
       console.error('Error fetching expenses:', err)
+    } finally {
+      setLoading(false)
     }
   }, [userId])
 
   useEffect(() => {
-    if (userId) fetchExpenses()
+    if (userId) {
+      fetchExpenses()
+    } else {
+      setLoading(false)
+    }
   }, [userId, fetchExpenses])
 
   async function addExpense(expenseData) {
@@ -75,5 +83,5 @@ export function useExpenses(userId) {
     }
   }
 
-  return { expenses, addExpense, updateExpense, deleteExpense }
+  return { expenses, loading, addExpense, updateExpense, deleteExpense }
 }

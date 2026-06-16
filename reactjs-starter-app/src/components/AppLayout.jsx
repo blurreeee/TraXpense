@@ -79,8 +79,8 @@ export function AppLayout({ children }) {
     {
       key: 'theme-toggle',
       label: (
-        <div className="theme-toggle-row" style={{ padding: '4px' }} onClick={e => e.stopPropagation()}>
-          <div className="theme-toggle-label">
+        <div className="theme-toggle-row" style={{ padding: '4px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} onClick={(e) => { e.stopPropagation(); toggleTheme(); }}>
+          <div className="theme-toggle-label" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             {isDark ? (
               <MoonOutlined className="theme-mode-icon dark" />
             ) : (
@@ -88,14 +88,16 @@ export function AppLayout({ children }) {
             )}
             <Text className="theme-mode-text">{isDark ? 'Dark Mode' : 'Light Mode'}</Text>
           </div>
-          <Switch
-            size="small"
-            checked={isDark}
-            onChange={toggleTheme}
-            checkedChildren={<MoonOutlined />}
-            unCheckedChildren={<SunOutlined />}
-            className="theme-switch"
-          />
+          <div onClick={(e) => e.stopPropagation()}>
+            <Switch
+              size="small"
+              checked={isDark}
+              onChange={toggleTheme}
+              checkedChildren={<MoonOutlined />}
+              unCheckedChildren={<SunOutlined />}
+              className="theme-switch"
+            />
+          </div>
         </div>
       ),
     },
