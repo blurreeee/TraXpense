@@ -9,6 +9,13 @@ import { ExpenseList } from '../components/ExpenseList'
 
 const { Title, Text } = Typography
 
+const getGreeting = () => {
+  const hour = new Date().getHours()
+  if (hour < 12) return 'Good morning'
+  if (hour < 18) return 'Good afternoon'
+  return 'Good evening'
+}
+
 const MONTHS = [
   { value: '', label: 'All Months' },
   { value: '01', label: 'January' },
@@ -91,7 +98,7 @@ export function ExpensesPage() {
 
       {/* Greeting */}
       <div className="greeting-section">
-        <Title level={2} className="greeting-title">Greetings, {user?.name || user?.username || 'User'}</Title>
+        <Title level={2} className="greeting-title">{getGreeting()}, {user?.name || user?.username || 'User'}</Title>
         <Text className="greeting-sub">Manage and track your expenses below</Text>
       </div>
 

@@ -21,6 +21,13 @@ const { Text } = Typography
 const SIDER_WIDTH = 220
 const SIDER_COLLAPSED_WIDTH = 64
 
+const getInitials = (name) => {
+  if (!name) return 'U'
+  const parts = name.trim().split(/\s+/)
+  if (parts.length === 1) return parts[0].charAt(0).toUpperCase()
+  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase()
+}
+
 export function AppLayout({ children }) {
   const [collapsed, setCollapsed] = useState(false)
   const [avatarPopoverOpen, setAvatarPopoverOpen] = useState(false)
@@ -58,7 +65,9 @@ export function AppLayout({ children }) {
       key: 'user-info',
       label: (
         <div className="avatar-popover-user" style={{ padding: '8px 4px' }}>
-          <Avatar icon={<UserOutlined />} size={36} className="popover-avatar-sm" />
+          <Avatar size={36} className="popover-avatar-sm" style={{ backgroundColor: '#1890ff', verticalAlign: 'middle' }}>
+            {getInitials(user?.name)}
+          </Avatar>
           <div>
             <Text className="popover-username">{user?.name || 'User'}</Text>
             <Text className="popover-role">Administrator</Text>
@@ -178,10 +187,12 @@ export function AppLayout({ children }) {
               overlayClassName="avatar-dropdown-overlay"
             >
               <Avatar
-                icon={<UserOutlined />}
                 className="user-avatar"
                 size={38}
-              />
+                style={{ backgroundColor: '#1890ff', verticalAlign: 'middle', color: 'white' }}
+              >
+                {getInitials(user?.name)}
+              </Avatar>
             </Dropdown>
           </div>
         </Header>

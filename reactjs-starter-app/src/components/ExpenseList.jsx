@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { List, Pagination, Empty, Typography, Tooltip } from 'antd'
+import { List, Pagination, Empty, Typography, Tooltip, Dropdown } from 'antd'
 import {
   CalendarOutlined,
   FileTextOutlined,
@@ -49,9 +49,14 @@ export function ExpenseList({ expenses, onRowClick }) {
   const [currentPage, setCurrentPage] = useState(1)
   const [amountSortOrder, setAmountSortOrder] = useState('default')
   const [dateSortOrder, setDateSortOrder] = useState('desc') // Default sort by date
+  const [selectedCategory, setSelectedCategory] = useState('All')
 
   const sortedExpenses = useMemo(() => {
     let result = [...expenses]
+
+    if (selectedCategory !== 'All') {
+      result = result.filter(item => item.description === selectedCategory)
+    }
 
     if (amountSortOrder !== 'default') {
       result.sort((a, b) => {
@@ -68,7 +73,7 @@ export function ExpenseList({ expenses, onRowClick }) {
     }
 
     return result
-  }, [expenses, amountSortOrder, dateSortOrder])
+  }, [expenses, amountSortOrder, dateSortOrder, selectedCategory])
 
   const totalItems = sortedExpenses.length
   const startIdx = (currentPage - 1) * PAGE_SIZE
@@ -88,10 +93,30 @@ export function ExpenseList({ expenses, onRowClick }) {
     else setDateSortOrder('default')
   }
 
+  const categoryItems = [
+    { key: 'All', label: 'All Categories' },
+    ...Object.keys(CATEGORY_CONFIG).map(cat => ({ key: cat, label: cat }))
+  ]
+
+  const onCategoryMenuClick = (e) => {
+    setSelectedCategory(e.key)
+    setCurrentPage(1)
+  }
+
   const listHeader = (
     <div className="expense-item-inner expense-list-header">
       <div className="expense-col expense-col-index">Sr. No.</div>
-      <div className="expense-col">Category</div>
+      <Dropdown
+        menu={{ items: categoryItems, onClick: onCategoryMenuClick }}
+        trigger={['click']}
+      >
+        <div className="expense-col expense-col-sortable" style={{ cursor: 'pointer' }}>
+          Category
+          <div className="sort-icons">
+            <DownOutlined style={{ color: selectedCategory !== 'All' ? 'var(--primary)' : 'var(--text-muted)' }} />
+          </div>
+        </div>
+      </Dropdown>
       <div
         className="expense-col expense-col-sortable"
         onClick={toggleDateSort}
