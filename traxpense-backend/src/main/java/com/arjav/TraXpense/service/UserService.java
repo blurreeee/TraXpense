@@ -33,7 +33,11 @@ public class UserService {
     }
 
     public UserResponseDTO authenticate(UserLoginDTO dto) {
-        Optional<User> userOpt = userRepository.findByUsername(dto.getUsername());
+        String identifier = dto.getUsername();
+        Optional<User> userOpt = userRepository.findByUsername(identifier);
+        if (userOpt.isEmpty()) {
+            userOpt = userRepository.findByEmail(identifier);
+        }
 
         if (userOpt.isPresent()) {
             User user = userOpt.get();
@@ -41,6 +45,6 @@ public class UserService {
                 return new UserResponseDTO(user);
             }
         }
-        throw new RuntimeException("Invalid username or password");
+        throw new RuntimeException("Invalid email/username or password");
     }
 }

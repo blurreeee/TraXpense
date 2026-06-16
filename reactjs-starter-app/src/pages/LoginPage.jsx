@@ -48,8 +48,8 @@ export function LoginPage() {
         </div>
         {!isRegistering ? (
           <Form layout="vertical" onFinish={onFinishLogin} style={{ width: '100%' }}>
-            <Form.Item name="username" label="Username" rules={[{ required: true }]}>
-              <Input placeholder="Username" />
+            <Form.Item name="username" label="Email or Username" rules={[{ required: true, message: 'Please input your Email or Username!' }]}>
+              <Input placeholder="Email or Username" />
             </Form.Item>
             <Form.Item name="password" label="Password" rules={[{ required: true }]}>
               <Input.Password placeholder="Password" />
