@@ -642,6 +642,12 @@ body,
   color: var(--text-secondary);
 }
 
+/* Remove default Ant Design list header padding to avoid double spacing */
+.expense-list .ant-list-header {
+  padding: 0 !important;
+  border-bottom: none !important;
+}
+
 .expense-col {
   display: flex;
   align-items: center;
@@ -666,7 +672,7 @@ body,
 .sort-icons {
   display: flex;
   flex-direction: column;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1;
 }
 
