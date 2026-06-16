@@ -781,12 +781,8 @@ body,
 
 /* ── Empty State ── */
 .empty-state {
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
   padding: 64px 32px;
   text-align: center;
-  box-shadow: var(--shadow-card);
 }
 
 .empty-text {
@@ -1026,8 +1022,13 @@ body,
 }
 
 @keyframes backdrop-fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 /* ── Tablet (≤ 900px) ── */
@@ -1116,7 +1117,7 @@ body,
   }
 
   /* Hide the Date column (3rd child) in both header and rows */
-  .expense-item-inner > *:nth-child(3) {
+  .expense-item-inner>*:nth-child(3) {
     display: none !important;
   }
 
@@ -1166,6 +1167,7 @@ body,
 
 /* ── Small Mobile (≤ 480px) ── */
 @media (max-width: 480px) {
+
   /* Collapse brand text on very small screens */
   .header-brand {
     display: none;

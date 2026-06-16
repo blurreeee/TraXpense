@@ -140,17 +140,6 @@ export function ExpenseList({ expenses, onRowClick }) {
     </div>
   )
 
-  if (totalItems === 0) {
-    return (
-      <div className="empty-state">
-        <Empty
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-          description={<Text className="empty-text">No expenses added yet.</Text>}
-        />
-      </div>
-    )
-  }
-
   return (
     <div className="expense-list-wrapper">
       <List
@@ -227,6 +216,16 @@ export function ExpenseList({ expenses, onRowClick }) {
           )
         }}
         className="expense-list"
+        locale={{
+          emptyText: (
+            <div className="empty-state" style={{ padding: '40px 0' }}>
+              <Empty
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description={<Text className="empty-text">No expenses found.</Text>}
+              />
+            </div>
+          )
+        }}
       />
 
       {totalItems > PAGE_SIZE && (
