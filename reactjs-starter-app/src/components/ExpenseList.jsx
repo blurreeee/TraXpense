@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react'
-import { List, Pagination, Empty, Typography, Tooltip, Dropdown } from 'antd'
+import { useState, useMemo, useRef } from 'react'
+import { List, Pagination, Empty, Typography, Dropdown } from 'antd'
 import {
   CalendarOutlined,
   FileTextOutlined,
@@ -51,6 +51,8 @@ export function ExpenseList({ expenses, loading, onRowClick }) {
   const [amountSortOrder, setAmountSortOrder] = useState('default')
   const [dateSortOrder, setDateSortOrder] = useState('desc') // Default sort by date
   const [selectedCategory, setSelectedCategory] = useState('All')
+
+  const tooltipRef = useRef(null)
 
   const sortedExpenses = useMemo(() => {
     let result = [...expenses]
@@ -104,6 +106,23 @@ export function ExpenseList({ expenses, loading, onRowClick }) {
     setCurrentPage(1)
   }
 
+  const handleMouseMove = (e, note) => {
+    if (!note || !tooltipRef.current) return
+    tooltipRef.current.style.opacity = '1'
+    tooltipRef.current.style.transform = `translate(${e.clientX + 15}px, ${e.clientY + 15}px)`
+    const textSpan = tooltipRef.current.querySelector('.tooltip-text')
+    if (textSpan && textSpan.textContent !== note) {
+      textSpan.textContent = note
+    }
+  }
+
+  const handleMouseLeave = () => {
+    if (tooltipRef.current) {
+      tooltipRef.current.style.opacity = '0'
+      tooltipRef.current.style.transform = `translate(-9999px, -9999px)`
+    }
+  }
+
   const listHeader = (
     <div className="expense-item-inner expense-list-header">
       <div className="expense-col expense-col-index">Sr. No.</div>
@@ -143,6 +162,33 @@ export function ExpenseList({ expenses, loading, onRowClick }) {
 
   return (
     <div className="expense-list-wrapper">
+      <div
+        ref={tooltipRef}
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          pointerEvents: 'none',
+          opacity: 0,
+          transition: 'opacity 0.15s ease',
+          background: 'rgba(0, 0, 0, 0.85)',
+          color: '#fff',
+          padding: '6px 12px',
+          borderRadius: '6px',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+          fontSize: '13px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          transform: 'translate(-9999px, -9999px)',
+          whiteSpace: 'nowrap'
+        }}
+      >
+        <FileTextOutlined />
+        <span className="tooltip-text"></span>
+      </div>
+
       <List
         loading={loading}
         header={listHeader}
@@ -153,68 +199,54 @@ export function ExpenseList({ expenses, loading, onRowClick }) {
           const globalIndex = startIdx + index + 1
           const amountClass = getAmountTierClass(Number(item.amount))
 
-          const tooltipContent = item.note ? (
-            <div className="expense-note-tooltip-content">
-              <FileTextOutlined style={{ marginRight: 6 }} />
-              {item.note}
-            </div>
-          ) : null
-
           return (
-            <Tooltip
+            <List.Item
               key={item.id}
-              title={tooltipContent}
-              placement="top"
-              color="black"
-              overlayClassName="expense-note-tooltip"
-              mouseEnterDelay={0.15}
-              mouseLeaveDelay={0.05}
+              className="expense-list-item"
+              onClick={() => onRowClick(item)}
+              onMouseMove={(e) => handleMouseMove(e, item.note)}
+              onMouseLeave={handleMouseLeave}
+              style={{ cursor: 'pointer' }}
             >
-              <List.Item
-                className="expense-list-item"
-                onClick={() => onRowClick(item)}
-                style={{ cursor: 'pointer' }}
-              >
-                <div className="expense-item-inner">
-                  <div className="expense-col expense-col-index">
-                    <div className="expense-index">{globalIndex}</div>
-                  </div>
+              <div className="expense-item-inner">
+                <div className="expense-col expense-col-index">
+                  <div className="expense-index">{globalIndex}</div>
+                </div>
 
-                  <div className="expense-col">
-                    <div
-                      className="expense-category-badge"
-                      style={{
-                        background: cat.bg,
-                        color: cat.color,
-                        border: `1px solid ${cat.color}35`,
-                      }}
-                    >
-                      <Icon style={{ fontSize: 13 }} />
-                      <span className="badge-label">{item.description}</span>
-                    </div>
-                  </div>
-
-                  <div className="expense-col expense-meta">
-                    <CalendarOutlined className="meta-icon" />
-                    <Text className="meta-text">
-                      {item.date ? dayjs(item.date).format('DD MMM YYYY') : '—'}
-                    </Text>
-                  </div>
-
-                  <div className="expense-col expense-col-amount">
-                    <div className={`expense-amount ${amountClass}`}>
-                      ₹{Number(item.amount).toLocaleString('en-IN', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </div>
-                    {item.note && (
-                      <FileTextOutlined className="note-indicator" title={item.note} />
-                    )}
+                <div className="expense-col">
+                  <div
+                    className="expense-category-badge"
+                    style={{
+                      background: cat.bg,
+                      color: cat.color,
+                      border: `1px solid ${cat.color}35`,
+                    }}
+                  >
+                    <Icon style={{ fontSize: 13 }} />
+                    <span className="badge-label">{item.description}</span>
                   </div>
                 </div>
-              </List.Item>
-            </Tooltip>
+
+                <div className="expense-col expense-meta">
+                  <CalendarOutlined className="meta-icon" />
+                  <Text className="meta-text">
+                    {item.date ? dayjs(item.date).format('DD MMM YYYY') : '—'}
+                  </Text>
+                </div>
+
+                <div className="expense-col expense-col-amount">
+                  <div className={`expense-amount ${amountClass}`}>
+                    ₹{Number(item.amount).toLocaleString('en-IN', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </div>
+                  {item.note && (
+                    <FileTextOutlined className="note-indicator" />
+                  )}
+                </div>
+              </div>
+            </List.Item>
           )
         }}
         className="expense-list"
