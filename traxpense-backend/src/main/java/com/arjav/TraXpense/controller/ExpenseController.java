@@ -2,7 +2,9 @@ package com.arjav.TraXpense.controller;
 
 import com.arjav.TraXpense.dto.ExpenseDTO;
 import com.arjav.TraXpense.entity.Expense;
+import com.arjav.TraXpense.service.ExpenseImportService;
 import com.arjav.TraXpense.service.ExpenseService;
+import org.springframework.web.multipart.MultipartFile;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +18,11 @@ import java.util.List;
 public class ExpenseController {
 
     private final ExpenseService expenseService;
+    private final ExpenseImportService expenseImportService;
 
-    public ExpenseController(ExpenseService expenseService) {
+    public ExpenseController(ExpenseService expenseService, ExpenseImportService expenseImportService) {
         this.expenseService = expenseService;
+        this.expenseImportService = expenseImportService;
     }
 
     @GetMapping
@@ -45,5 +49,10 @@ public class ExpenseController {
     public ResponseEntity<Void> delete(@PathVariable Long id, @RequestParam Long userId) {
         expenseService.deleteExpense(id, userId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/import")
+    public ResponseEntity<List<Expense>> importExpense(@RequestParam("file") MultipartFile file, @RequestParam("userId") Long userId) {
+        return ResponseEntity.ok(expenseImportService.importExpensesFromImage(file, userId));
     }
 }

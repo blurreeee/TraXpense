@@ -83,5 +83,30 @@ export function useExpenses(userId) {
     }
   }
 
-  return { expenses, loading, addExpense, updateExpense, deleteExpense }
+  async function importExpense(file) {
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('userId', userId)
+
+      const response = await fetch(`${API_URL}/import`, {
+        method: 'POST',
+        body: formData,
+      })
+      if (response.ok) {
+        const entries = await response.json()  // now returns a list
+        setExpenses(prev => [...entries, ...prev])
+        return entries
+      } else {
+        const errText = await response.text()
+        console.error('Failed to import expense:', errText)
+        return null
+      }
+    } catch (err) {
+      console.error('Error importing expense:', err)
+      return null
+    }
+  }
+
+  return { expenses, loading, addExpense, updateExpense, deleteExpense, importExpense }
 }

@@ -21,6 +21,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, Object>> handleRuntimeException(RuntimeException ex) {
+        ex.printStackTrace();
         return buildError(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
@@ -44,6 +45,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
-        return buildError(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred");
+        ex.printStackTrace();
+        return buildError(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred: " + ex.getMessage());
     }
 }

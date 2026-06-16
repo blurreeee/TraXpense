@@ -10,4 +10,6 @@ import java.util.List;
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     List<Expense> findAllByOrderByCreatedAtDesc();
     List<Expense> findByUserIdOrderByCreatedAtDesc(Long userId);
+
+    boolean existsByUserIdAndAmountAndDateAndDescription(Long userId, java.math.BigDecimal amount, java.time.LocalDate date, String description);
 }

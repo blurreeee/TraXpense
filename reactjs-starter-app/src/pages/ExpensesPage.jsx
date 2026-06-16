@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
-import { Typography, Button, Select, message } from 'antd'
-import { PlusOutlined, FilterOutlined } from '@ant-design/icons'
+import { Typography, Button, Select, message, Upload } from 'antd'
+import { PlusOutlined, FilterOutlined, UploadOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import { useExpenses } from '../hooks/useExpenses'
 import { useAuth } from '../context/AuthContext'
@@ -34,7 +34,7 @@ const MONTHS = [
 
 export function ExpensesPage() {
   const { user } = useAuth()
-  const { expenses, loading, addExpense, updateExpense, deleteExpense } = useExpenses(user?.id)
+  const { expenses, loading, addExpense, updateExpense, deleteExpense, importExpense } = useExpenses(user?.id)
   const [modalOpen, setModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState('add')
   const [selectedExpense, setSelectedExpense] = useState(null)
@@ -117,6 +117,27 @@ export function ExpensesPage() {
         >
           Add Expense
         </Button>
+        <Upload
+          accept="image/*"
+          showUploadList={false}
+          beforeUpload={async (file) => {
+            const hide = messageApi.loading('Importing receipt...', 0);
+            const result = await importExpense(file);
+            hide();
+            if (result && result.length > 0) {
+              messageApi.success(`Successfully imported ${result.length} transaction(s)!`);
+            } else if (result && result.length === 0) {
+              messageApi.warning('No new transactions found (all duplicates or nothing extracted).');
+            } else {
+              messageApi.error('Failed to import receipt. Please try again.');
+            }
+            return false; // Prevent default antd upload behavior
+          }}
+        >
+          <Button icon={<UploadOutlined />} size="large" className="import-expense-btn">
+            Import Receipt
+          </Button>
+        </Upload>
 
         <div className="action-bar-right" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <div className="grand-total" style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-main)' }}>
