@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Modal,
   Form,
@@ -56,6 +56,7 @@ const EXPENSE_CATEGORIES = Object.entries(CATEGORY_ICON_MAP).map(([value, icon])
 export function ExpenseModal({ open, mode, expense, onSave, onDelete, onCancel }) {
   const [form] = Form.useForm()
   const isEdit = mode === 'edit'
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     if (open) {
@@ -75,7 +76,8 @@ export function ExpenseModal({ open, mode, expense, onSave, onDelete, onCancel }
   async function handleSave() {
     try {
       const values = await form.validateFields()
-      onSave({
+      setLoading(true)
+      await onSave({
         date: values.date ? values.date.format('YYYY-MM-DD') : null,
         description: values.description,
         amount: values.amount,
@@ -83,6 +85,8 @@ export function ExpenseModal({ open, mode, expense, onSave, onDelete, onCancel }
       })
     } catch {
       // validation error — Ant Design shows inline messages
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -110,6 +114,7 @@ export function ExpenseModal({ open, mode, expense, onSave, onDelete, onCancel }
           type="primary"
           icon={isEdit ? <SaveOutlined /> : <PlusCircleOutlined />}
           onClick={handleSave}
+          loading={loading}
         >
           {isEdit ? 'Save Changes' : 'Add Expense'}
         </Button>
