@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useLayoutEffect } from 'react'
+import { createContext, useContext, useState, useLayoutEffect, useEffect } from 'react'
+import { useAuth } from './AuthContext'
 
 const ThemeContext = createContext({ isDark: true, toggleTheme: () => {} })
 
@@ -14,6 +15,14 @@ function getInitialDark() {
 
 export function ThemeProvider({ children }) {
   const [isDark, setIsDark] = useState(getInitialDark)
+  const { user, setAuthState } = useAuth()
+
+  // Sync with user preference on login/load
+  useEffect(() => {
+    if (user && user.isDarkTheme !== undefined) {
+      setIsDark(user.isDarkTheme)
+    }
+  }, [user])
 
   // useLayoutEffect runs synchronously before paint — prevents flash of wrong theme
   useLayoutEffect(() => {
@@ -23,8 +32,25 @@ export function ThemeProvider({ children }) {
     } catch { /* silent */ }
   }, [isDark])
 
-  function toggleTheme() {
-    setIsDark(prev => !prev)
+  async function toggleTheme() {
+    const newTheme = !isDark
+    setIsDark(newTheme)
+    
+    if (user) {
+      try {
+        const response = await fetch(`/api/users/${user.id}/theme`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ isDarkTheme: newTheme })
+        })
+        if (response.ok) {
+          const updatedUser = await response.json()
+          setAuthState(prev => ({ ...prev, user: updatedUser }))
+        }
+      } catch (err) {
+        console.error('Failed to update theme preference:', err)
+      }
+    }
   }
 
   return (

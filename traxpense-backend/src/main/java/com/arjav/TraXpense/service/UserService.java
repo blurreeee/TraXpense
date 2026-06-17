@@ -47,4 +47,12 @@ public class UserService {
         }
         throw new RuntimeException("Invalid email/username or password");
     }
+
+    public UserResponseDTO updateUserTheme(Long userId, Boolean isDarkTheme) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setIsDarkTheme(isDarkTheme);
+        User savedUser = userRepository.save(user);
+        return new UserResponseDTO(savedUser);
+    }
 }

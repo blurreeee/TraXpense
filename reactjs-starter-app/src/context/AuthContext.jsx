@@ -83,6 +83,7 @@ export function AuthProvider({ children }) {
       value={{
         isAuthenticated: authState.isAuthenticated,
         user: authState.user,
+        setAuthState,
         login,
         register,
         logout,

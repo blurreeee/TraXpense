@@ -22,6 +22,9 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    private Boolean isDarkTheme = true;
+
     public User() {}
 
     public User(String name, String username, String email, String password) {
@@ -69,5 +72,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Boolean getIsDarkTheme() {
+        return isDarkTheme;
+    }
+
+    public void setIsDarkTheme(Boolean isDarkTheme) {
+        this.isDarkTheme = isDarkTheme;
     }
 }

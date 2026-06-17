@@ -7,6 +7,7 @@ public class UserResponseDTO {
     private String name;
     private String username;
     private String email;
+    private Boolean isDarkTheme;
 
     public UserResponseDTO() {}
 
@@ -15,6 +16,7 @@ public class UserResponseDTO {
         this.name = user.getName();
         this.username = user.getUsername();
         this.email = user.getEmail();
+        this.isDarkTheme = user.getIsDarkTheme();
     }
 
     public Long getId() {
@@ -47,5 +49,13 @@ public class UserResponseDTO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Boolean getIsDarkTheme() {
+        return isDarkTheme;
+    }
+
+    public void setIsDarkTheme(Boolean isDarkTheme) {
+        this.isDarkTheme = isDarkTheme;
     }
 }
