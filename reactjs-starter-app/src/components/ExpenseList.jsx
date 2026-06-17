@@ -12,7 +12,7 @@ import {
   DownOutlined,
 } from '@ant-design/icons'
 import dayjs from 'dayjs'
-import { rupeeSpinProps } from './RupeeLoader'
+import RupeeLoader from './RupeeLoader'
 
 const { Text } = Typography
 
@@ -190,11 +190,16 @@ export function ExpenseList({ expenses, loading, onRowClick }) {
         <span className="tooltip-text"></span>
       </div>
 
-      <List
-        loading={loading ? rupeeSpinProps(90) : false}
-        header={listHeader}
-        dataSource={pageItems}
-        renderItem={(item, index) => {
+      <div className={`expense-list${loading ? ' expense-list--loading' : ''}`}>
+        {listHeader}
+        {loading ? (
+          <div className="expense-list-loader">
+            <RupeeLoader size={120} />
+          </div>
+        ) : (
+          <List
+            dataSource={pageItems}
+            renderItem={(item, index) => {
           const cat = CATEGORY_CONFIG[item.description] || CATEGORY_CONFIG.Misc
           const { Icon } = cat
           const globalIndex = startIdx + index + 1
@@ -249,19 +254,21 @@ export function ExpenseList({ expenses, loading, onRowClick }) {
               </div>
             </List.Item>
           )
-        }}
-        className="expense-list"
-        locale={{
-          emptyText: (
-            <div className="empty-state" style={{ padding: '40px 0' }}>
-              <Empty
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-                description={<Text className="empty-text">No expenses found.</Text>}
-              />
-            </div>
-          )
-        }}
-      />
+            }}
+            className="expense-list-body"
+            locale={{
+              emptyText: (
+                <div className="empty-state" style={{ padding: '40px 0' }}>
+                  <Empty
+                    image={Empty.PRESENTED_IMAGE_SIMPLE}
+                    description={<Text className="empty-text">No expenses found.</Text>}
+                  />
+                </div>
+              )
+            }}
+          />
+        )}
+      </div>
 
       {totalItems > PAGE_SIZE && (
         <div className="pagination-wrapper">

@@ -636,6 +636,29 @@ body,
   transition: background 0.25s ease, border-color 0.25s ease;
 }
 
+.expense-list--loading {
+  min-height: 280px;
+  overflow: visible;
+}
+
+.expense-list-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  padding: 32px 24px;
+}
+
+.expense-list-body {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.expense-list-body .ant-list-empty-text {
+  padding: 0;
+}
+
 .expense-list-item {
   padding: 0 !important;
   border-bottom: 1px solid var(--border-subtle) !important;
