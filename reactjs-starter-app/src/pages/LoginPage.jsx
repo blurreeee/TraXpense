@@ -5,6 +5,7 @@ import { AccountBookFilled, MoonOutlined, SunOutlined } from '@ant-design/icons'
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import PageLoader from '../components/PageLoader';
 
 const { Title, Text, Link } = Typography;
 
@@ -41,6 +42,7 @@ export function LoginPage() {
 
   return (
     <div className="login-container">
+      {loading && <PageLoader fullScreen size={120} />}
       <div className="login-card">
         <div className="login-header">
           <img src="/traxpense-logo.png" alt="TraXpense Logo" className="login-logo" />
@@ -58,7 +60,7 @@ export function LoginPage() {
             {error && <Text type="danger" style={{ display: 'block', marginBottom: 16 }}>{error}</Text>}
 
             <Form.Item>
-              <Button type="primary" htmlType="submit" loading={loading} block>
+              <Button type="primary" htmlType="submit" disabled={loading} block>
                 Login
               </Button>
             </Form.Item>
@@ -85,7 +87,7 @@ export function LoginPage() {
             {error && <Text type="danger" style={{ display: 'block', marginBottom: 16 }}>{error}</Text>}
 
             <Form.Item>
-              <Button type="primary" htmlType="submit" loading={loading} block>
+              <Button type="primary" htmlType="submit" disabled={loading} block>
                 Register
               </Button>
             </Form.Item>

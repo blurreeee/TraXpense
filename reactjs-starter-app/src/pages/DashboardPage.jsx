@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
 import { useAuth } from '../context/AuthContext'
 import { useExpenses } from '../hooks/useExpenses'
+import PageLoader from '../components/PageLoader'
 
 const { Title, Text } = Typography
 
@@ -95,7 +96,7 @@ const CustomDot = (props) => {
 export function DashboardPage() {
   const navigate = useNavigate()
   const { user } = useAuth()
-  const { expenses } = useExpenses(user?.id)
+  const { expenses, loading } = useExpenses(user?.id)
 
   const currentMonth = dayjs().format('MM')
   const currentYear = dayjs().format('YYYY')
@@ -146,6 +147,10 @@ export function DashboardPage() {
       }
     })
   }, [expenses, lineYear, currentYear, currentMonth])
+
+  if (loading) {
+    return <PageLoader />
+  }
 
   return (
     <div className="dashboard-page">

@@ -8,6 +8,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import { LoginPage } from './pages/LoginPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { ExpensesPage } from './pages/ExpensesPage'
+import RupeeLoader from './components/RupeeLoader'
 
 const BASE_TOKENS = {
   colorPrimary: '#0d9488',
@@ -81,7 +82,7 @@ function AppContent() {
   }, [])
 
   return (
-    <ConfigProvider theme={configTheme}>
+    <ConfigProvider theme={configTheme} spin={{ indicator: <RupeeLoader size={36} /> }}>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route

@@ -12,6 +12,7 @@ import {
   DownOutlined,
 } from '@ant-design/icons'
 import dayjs from 'dayjs'
+import { rupeeSpinProps } from './RupeeLoader'
 
 const { Text } = Typography
 
@@ -190,7 +191,7 @@ export function ExpenseList({ expenses, loading, onRowClick }) {
       </div>
 
       <List
-        loading={loading}
+        loading={loading ? rupeeSpinProps(90) : false}
         header={listHeader}
         dataSource={pageItems}
         renderItem={(item, index) => {

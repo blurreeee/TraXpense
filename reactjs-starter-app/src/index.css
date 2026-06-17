@@ -1437,3 +1437,20 @@ body,
     border-radius: var(--radius-md);
   }
 }
+
+/* ── Page loader ── */
+.page-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 320px;
+}
+
+.page-loader--fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  min-height: 100vh;
+  background: var(--bg-base);
+}
