@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Layout, Menu, Avatar, Typography, Button, Dropdown, Switch } from 'antd'
+import { Layout, Menu, Avatar, Typography, Button, Dropdown, Switch, message } from 'antd'
 import {
   DashboardOutlined,
   WalletOutlined,
@@ -14,6 +14,7 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useTheme } from '../context/ThemeContext'
 import { useAuth } from '../context/AuthContext'
+import { ChangeUsernameModal } from './ChangeUsernameModal'
 
 const { Header, Sider, Content } = Layout
 const { Text } = Typography
@@ -31,10 +32,11 @@ const getInitials = (name) => {
 export function AppLayout({ children }) {
   const [collapsed, setCollapsed] = useState(false)
   const [avatarPopoverOpen, setAvatarPopoverOpen] = useState(false)
+  const [usernameModalOpen, setUsernameModalOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768)
   const [mobileOpen, setMobileOpen] = useState(false)
   const { isDark, toggleTheme } = useTheme()
-  const { user, logout } = useAuth()
+  const { user, logout, updateUsername } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -60,17 +62,34 @@ export function AppLayout({ children }) {
     { key: 'expenses', icon: <WalletOutlined />, label: 'Expenses' },
   ]
 
+  const openUsernameModal = () => {
+    setAvatarPopoverOpen(false)
+    setUsernameModalOpen(true)
+  }
+
+  const handleUsernameSave = async (newUsername) => {
+    const result = await updateUsername(newUsername)
+    if (result.success) {
+      message.success('Username updated successfully')
+      setUsernameModalOpen(false)
+    }
+    return result
+  }
+
   const dropdownItems = [
     {
       key: 'user-info',
       label: (
-        <div className="avatar-popover-user" style={{ padding: '8px 4px' }}>
+        <div
+          className="avatar-popover-user username-clickable"
+          title="Click to change username"
+        >
           <Avatar size={36} className="popover-avatar-sm" style={{ backgroundColor: '#1890ff', verticalAlign: 'middle' }}>
             {getInitials(user?.name)}
           </Avatar>
           <div>
             <Text className="popover-username">{user?.name || 'User'}</Text>
-            <Text className="popover-role">Administrator</Text>
+            <Text className="popover-role">@{user?.username || 'user'}</Text>
           </div>
         </div>
       ),
@@ -179,6 +198,7 @@ export function AppLayout({ children }) {
               menu={{
                 items: dropdownItems,
                 onClick: ({ key }) => {
+                  if (key === 'user-info') openUsernameModal()
                   if (key === 'logout') logout()
                 },
               }}
@@ -202,6 +222,13 @@ export function AppLayout({ children }) {
         {/* ── Page Content ── */}
         <Content className="app-content">{children}</Content>
       </Layout>
+
+      <ChangeUsernameModal
+        open={usernameModalOpen}
+        user={user}
+        onSave={handleUsernameSave}
+        onCancel={() => setUsernameModalOpen(false)}
+      />
     </Layout>
   )
 }

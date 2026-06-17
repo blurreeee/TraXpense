@@ -2,6 +2,8 @@ package com.arjav.TraXpense.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -24,6 +26,9 @@ public class User {
 
     @Column(nullable = false, columnDefinition = "boolean default true")
     private Boolean isDarkTheme = true;
+
+    @Column(name = "username_changed_at")
+    private LocalDateTime usernameChangedAt;
 
     public User() {}
 
@@ -80,5 +85,13 @@ public class User {
 
     public void setIsDarkTheme(Boolean isDarkTheme) {
         this.isDarkTheme = isDarkTheme;
+    }
+
+    public LocalDateTime getUsernameChangedAt() {
+        return usernameChangedAt;
+    }
+
+    public void setUsernameChangedAt(LocalDateTime usernameChangedAt) {
+        this.usernameChangedAt = usernameChangedAt;
     }
 }

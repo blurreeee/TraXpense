@@ -220,6 +220,30 @@ body,
   align-items: center;
   gap: 10px;
   margin-bottom: 2px;
+  width: 100%;
+  padding: 4px 0;
+}
+
+.avatar-popover-user.username-clickable {
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background-color 0.15s ease;
+}
+
+.avatar-popover-user.username-clickable:hover {
+  background-color: var(--bg-hover, rgba(0, 0, 0, 0.04));
+}
+
+.avatar-popover-user.username-clickable:hover .popover-username {
+  color: var(--primary) !important;
+}
+
+.avatar-dropdown-overlay .ant-dropdown-menu-item:first-child {
+  cursor: pointer;
+}
+
+.avatar-dropdown-overlay .ant-dropdown-menu-item:first-child .ant-dropdown-menu-title-content {
+  width: 100%;
 }
 
 .popover-avatar-sm {
@@ -233,6 +257,7 @@ body,
   font-size: 14px !important;
   color: var(--text-primary) !important;
   line-height: 1.3;
+  transition: color 0.15s ease;
 }
 
 .popover-role {

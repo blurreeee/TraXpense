@@ -2,12 +2,15 @@ package com.arjav.TraXpense.dto;
 
 import com.arjav.TraXpense.entity.User;
 
+import java.time.LocalDateTime;
+
 public class UserResponseDTO {
     private Long id;
     private String name;
     private String username;
     private String email;
     private Boolean isDarkTheme;
+    private LocalDateTime usernameChangedAt;
 
     public UserResponseDTO() {}
 
@@ -17,6 +20,7 @@ public class UserResponseDTO {
         this.username = user.getUsername();
         this.email = user.getEmail();
         this.isDarkTheme = user.getIsDarkTheme();
+        this.usernameChangedAt = user.getUsernameChangedAt();
     }
 
     public Long getId() {
@@ -57,5 +61,13 @@ public class UserResponseDTO {
 
     public void setIsDarkTheme(Boolean isDarkTheme) {
         this.isDarkTheme = isDarkTheme;
+    }
+
+    public LocalDateTime getUsernameChangedAt() {
+        return usernameChangedAt;
+    }
+
+    public void setUsernameChangedAt(LocalDateTime usernameChangedAt) {
+        this.usernameChangedAt = usernameChangedAt;
     }
 }

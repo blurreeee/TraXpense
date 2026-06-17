@@ -31,4 +31,18 @@ public class UserController {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }
     }
+
+    @PutMapping("/{userId}/username")
+    public ResponseEntity<?> updateUsername(@PathVariable Long userId, @RequestBody Map<String, String> payload) {
+        try {
+            String username = payload.get("username");
+            if (username == null || username.isBlank()) {
+                return ResponseEntity.badRequest().body(Map.of("message", "username is required"));
+            }
+            UserResponseDTO updatedUser = userService.updateUsername(userId, username);
+            return ResponseEntity.ok(updatedUser);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
 }

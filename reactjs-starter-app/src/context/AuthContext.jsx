@@ -73,6 +73,32 @@ export function AuthProvider({ children }) {
     }
   }
 
+  async function updateUsername(newUsername) {
+    if (!authState.user) {
+      return { success: false, error: 'Not authenticated' };
+    }
+
+    try {
+      const response = await fetch(`/api/users/${authState.user.id}/username`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: newUsername }),
+      });
+
+      if (response.ok) {
+        const updatedUser = await response.json();
+        setAuthState(prev => ({ ...prev, user: updatedUser }));
+        return { success: true };
+      }
+
+      const errorData = await response.json().catch(() => null);
+      return { success: false, error: errorData?.message || 'Failed to update username' };
+    } catch (err) {
+      console.error('Update username error:', err);
+      return { success: false, error: 'Network error occurred' };
+    }
+  }
+
   function logout() {
     setAuthState({ isAuthenticated: false, user: null });
     navigate('/login', { replace: true });
@@ -86,6 +112,7 @@ export function AuthProvider({ children }) {
         setAuthState,
         login,
         register,
+        updateUsername,
         logout,
       }}
     >

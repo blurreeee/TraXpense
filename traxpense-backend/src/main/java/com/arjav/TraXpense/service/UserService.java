@@ -7,6 +7,8 @@ import com.arjav.TraXpense.entity.User;
 import com.arjav.TraXpense.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 @Service
@@ -52,6 +54,40 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         user.setIsDarkTheme(isDarkTheme);
+        User savedUser = userRepository.save(user);
+        return new UserResponseDTO(savedUser);
+    }
+
+    public UserResponseDTO updateUsername(Long userId, String newUsername) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        String trimmedUsername = newUsername == null ? "" : newUsername.trim();
+        if (trimmedUsername.isEmpty()) {
+            throw new RuntimeException("Username cannot be empty");
+        }
+
+        if (trimmedUsername.equals(user.getUsername())) {
+            throw new RuntimeException("This is already your username");
+        }
+
+        if (user.getUsernameChangedAt() != null) {
+            LocalDateTime nextAllowedChange = user.getUsernameChangedAt().plusDays(14);
+            if (LocalDateTime.now().isBefore(nextAllowedChange)) {
+                long daysRemaining = ChronoUnit.DAYS.between(LocalDateTime.now(), nextAllowedChange) + 1;
+                throw new RuntimeException(
+                        "You can change your username again in " + daysRemaining + " day(s)"
+                );
+            }
+        }
+
+        Optional<User> existingUser = userRepository.findByUsername(trimmedUsername);
+        if (existingUser.isPresent() && !existingUser.get().getId().equals(userId)) {
+            throw new RuntimeException("Username is already taken");
+        }
+
+        user.setUsername(trimmedUsername);
+        user.setUsernameChangedAt(LocalDateTime.now());
         User savedUser = userRepository.save(user);
         return new UserResponseDTO(savedUser);
     }
