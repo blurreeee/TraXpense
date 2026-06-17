@@ -43,7 +43,7 @@ export function LoginPage() {
     <div className="login-container">
       <div className="login-card">
         <div className="login-header">
-          <AccountBookFilled className="login-logo" />
+          <img src="/traxpense-logo.png" alt="TraXpense Logo" className="login-logo" />
           <Title level={3} className="login-title">TraXpenses</Title>
         </div>
         {!isRegistering ? (

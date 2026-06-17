@@ -169,7 +169,7 @@ export function AppLayout({ children }) {
               />
             )}
             <div className="header-logo">
-              <img src="/traxpense-logo.png" alt="TraXpense Logo" style={{ width: 32, height: 32, objectFit: 'contain', filter: 'drop-shadow(0 0 4px var(--primary))' }} />
+              <img src="/traxpense-logo.png" alt="TraXpense Logo" style={{ width: 88, height: 88, objectFit: 'contain', filter: 'drop-shadow(0 0 4px var(--primary))' }} />
               <Text className="header-brand">TraXpenses</Text>
             </div>
           </div>

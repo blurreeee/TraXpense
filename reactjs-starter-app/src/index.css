@@ -450,14 +450,13 @@ body,
 }
 
 .login-logo {
-  font-size: 32px;
+  width: 112px;
+  height: 112px;
+  object-fit: contain;
   color: var(--primary);
   filter: drop-shadow(0 0 6px var(--primary));
-  line-height: 1;
-  display: flex;
-  align-items: center;
   flex-shrink: 0;
-  transition: color 0.25s ease;
+  transition: filter 0.25s ease;
 }
 
 .login-title {
