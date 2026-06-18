@@ -173,16 +173,6 @@ export function AppLayout({ children }) {
         {/* ── Fixed Header ── */}
         <Header className="app-header">
           <div className="header-left">
-            {/* Mobile hamburger */}
-            {isMobile && (
-              <Button
-                type="text"
-                icon={<MenuUnfoldOutlined />}
-                onClick={() => setMobileOpen(true)}
-                className="collapse-btn mobile-hamburger"
-                style={{ padding: 0, marginRight: 8 }}
-              />
-            )}
             <div className="header-logo">
               <img src="/traxpense-logo.png" alt="TraXpense Logo" style={{ width: 88, height: 88, objectFit: 'contain', filter: 'drop-shadow(0 0 4px var(--primary))' }} />
               <Text className="header-brand">TraXpenses</Text>

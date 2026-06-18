@@ -1457,10 +1457,7 @@ body,
 /* ── Small Mobile (≤ 480px) ── */
 @media (max-width: 480px) {
 
-  /* Collapse brand text on very small screens */
-  .header-brand {
-    display: none;
-  }
+  /* Collapse brand text on very small screens (REMOVED) */
 
   .logo-icon-header {
     font-size: 20px;
