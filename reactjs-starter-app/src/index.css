@@ -318,8 +318,37 @@ body,
   z-index: 99;
   background: var(--bg-surface) !important;
   border-right: 1px solid var(--border) !important;
-  overflow: hidden;
+  overflow: visible;
   transition: background 0.25s ease, border-color 0.25s ease;
+}
+
+.sider-toggle-arrow {
+  position: absolute;
+  top: 24px;
+  right: -12px;
+  width: 24px;
+  height: 24px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1000;
+  color: var(--text-secondary);
+  transition: var(--transition);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sider-toggle-arrow:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+  box-shadow: 0 2px 12px rgba(13, 148, 136, 0.2);
+}
+
+.sider-toggle-arrow .anticon {
+  font-size: 10px;
 }
 
 .app-sider .ant-layout-sider-trigger {
@@ -1412,6 +1441,16 @@ body,
   /* Dashboard */
   .dashboard-icon {
     font-size: 56px;
+  }
+  
+  .dashboard-charts-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .dashboard-banner-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
   }
 }
 

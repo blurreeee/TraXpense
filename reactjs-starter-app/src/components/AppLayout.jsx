@@ -10,6 +10,8 @@ import {
   SunOutlined,
   AccountBookFilled,
   LogoutOutlined,
+  LeftOutlined,
+  RightOutlined
 } from '@ant-design/icons'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useTheme } from '../context/ThemeContext'
@@ -145,17 +147,11 @@ export function AppLayout({ children }) {
         collapsedWidth={isMobile ? SIDER_WIDTH : SIDER_COLLAPSED_WIDTH}
         className={`app-sider${isMobile ? (mobileOpen ? ' mobile-open' : ' mobile-hidden') : ''}`}
       >
-        <div className="sider-logo" style={{ justifyContent: collapsed && !isMobile ? 'center' : 'space-between', padding: collapsed && !isMobile ? '20px 0 16px' : '20px 16px 16px' }}>
-          <Button
-            type="text"
-            icon={collapsed && !isMobile ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => {
-              if (isMobile) setMobileOpen(false)
-              else setCollapsed(c => !c)
-            }}
-            className="collapse-btn"
-            style={{ padding: 0 }}
-          />
+        <div className="sider-toggle-arrow" onClick={() => {
+          if (isMobile) setMobileOpen(!mobileOpen)
+          else setCollapsed(!collapsed)
+        }}>
+          {isMobile ? (mobileOpen ? <LeftOutlined /> : <RightOutlined />) : (collapsed ? <RightOutlined /> : <LeftOutlined />)}
         </div>
 
         <Menu
