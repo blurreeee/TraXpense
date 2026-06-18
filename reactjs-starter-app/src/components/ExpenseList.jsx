@@ -33,6 +33,7 @@ const CATEGORY_CONFIG = {
  * Actual colours are defined in index.css via CSS variables, switching per theme.
  */
 function getAmountTierClass(amount) {
+  if (amount < 0) return 'amount-tier-1'
   if (amount <= 500) return 'amount-tier-1'
   if (amount <= 1000) return 'amount-tier-2'
   if (amount <= 5000) return 'amount-tier-3'
@@ -242,7 +243,7 @@ export function ExpenseList({ expenses, loading, onRowClick }) {
 
                 <div className="expense-col expense-col-amount">
                   <div className={`expense-amount ${amountClass}`}>
-                    ₹{Number(item.amount).toLocaleString('en-IN', {
+                    {Number(item.amount) < 0 ? '+₹' : '₹'}{Math.abs(Number(item.amount)).toLocaleString('en-IN', {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })}

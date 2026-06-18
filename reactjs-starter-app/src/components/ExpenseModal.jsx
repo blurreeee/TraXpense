@@ -8,6 +8,7 @@ import {
   Input,
   Button,
   Space,
+  Switch,
 } from 'antd'
 import {
   DeleteOutlined,
@@ -57,18 +58,22 @@ export function ExpenseModal({ open, mode, expense, onSave, onDelete, onCancel }
   const [form] = Form.useForm()
   const isEdit = mode === 'edit'
   const [loading, setLoading] = useState(false)
+  const [isRefund, setIsRefund] = useState(false)
 
   useEffect(() => {
     if (open) {
       if (isEdit && expense) {
+        const isExpRefund = Number(expense.amount) < 0
+        setIsRefund(isExpRefund)
         form.setFieldsValue({
           date: expense.date ? dayjs(expense.date) : null,
           description: expense.description,
-          amount: expense.amount,
+          amount: Math.abs(Number(expense.amount)),
           note: expense.note || '',
         })
       } else {
         form.resetFields()
+        setIsRefund(false)
       }
     }
   }, [open, isEdit, expense, form])
@@ -80,7 +85,7 @@ export function ExpenseModal({ open, mode, expense, onSave, onDelete, onCancel }
       await onSave({
         date: values.date ? values.date.format('YYYY-MM-DD') : null,
         description: values.description,
-        amount: values.amount,
+        amount: isRefund ? -Math.abs(values.amount) : Math.abs(values.amount),
         note: values.note?.trim() || '',
       })
     } catch {
@@ -150,6 +155,21 @@ export function ExpenseModal({ open, mode, expense, onSave, onDelete, onCancel }
           />
         </Form.Item>
 
+        <Form.Item label="Type">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Switch
+              checked={isRefund}
+              onChange={(checked) => {
+                setIsRefund(checked)
+                if (checked) {
+                  form.setFieldsValue({ description: 'Misc' })
+                }
+              }}
+            />
+            <span>Refund</span>
+          </div>
+        </Form.Item>
+
         <Form.Item
           name="description"
           label="Category"
@@ -159,6 +179,7 @@ export function ExpenseModal({ open, mode, expense, onSave, onDelete, onCancel }
             placeholder="Select expense category"
             options={EXPENSE_CATEGORIES}
             style={{ width: '100%' }}
+            disabled={isRefund}
           />
         </Form.Item>
 
@@ -167,12 +188,10 @@ export function ExpenseModal({ open, mode, expense, onSave, onDelete, onCancel }
           label="Amount (₹)"
           rules={[
             { required: true, message: 'Please enter an amount' },
-            { type: 'number', min: 0.01, message: 'Amount must be greater than 0' },
           ]}
         >
           <InputNumber
             style={{ width: '100%' }}
-            min={0.01}
             precision={2}
             placeholder="0.00"
             prefix="₹"
