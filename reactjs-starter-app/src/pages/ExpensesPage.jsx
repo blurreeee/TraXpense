@@ -143,7 +143,6 @@ export function ExpensesPage() {
           <div className="grand-total" style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-main)' }}>
             Total: ₹{grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
-          <FilterOutlined className="filter-icon" />
           <Select
             value={selectedMonth}
             onChange={setSelectedMonth}

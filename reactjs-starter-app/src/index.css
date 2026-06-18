@@ -1367,9 +1367,16 @@ body,
     gap: 10px;
   }
 
-  .add-expense-btn {
+  .add-expense-btn,
+  .import-expense-btn {
     width: 100%;
     justify-content: center;
+  }
+
+  .action-bar .ant-upload-wrapper,
+  .action-bar .ant-upload {
+    width: 100%;
+    display: block;
   }
 
   .action-bar-right {
@@ -1378,10 +1385,23 @@ body,
     gap: 8px;
   }
 
-  /* Filters: stretch to fill row evenly */
-  .action-bar-right .ant-select {
+  .action-bar-right .month-filter {
+    order: 2;
     flex: 1;
     min-width: 100px;
+  }
+
+  .action-bar-right .year-filter {
+    order: 3;
+    flex: 1;
+    min-width: 100px;
+  }
+
+  .action-bar-right .grand-total {
+    order: 4;
+    width: 100%;
+    text-align: center;
+    padding-top: 4px;
   }
 
   .action-bar-right .ant-select .ant-select-selector {
@@ -1470,10 +1490,7 @@ body,
     font-size: 11px;
   }
 
-  /* Icon-only category badge */
-  .badge-label {
-    display: none;
-  }
+  /* Icon-only category badge (REMOVED) */
 
   .expense-category-badge {
     padding: 4px 8px;
