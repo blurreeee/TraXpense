@@ -2,6 +2,9 @@ import { useState, useMemo, useEffect } from 'react'
 import { Typography, Button, Select, message, Upload, Spin } from 'antd'
 import { PlusOutlined, FilterOutlined, UploadOutlined, LoadingOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+
+dayjs.extend(relativeTime)
 import { useLocation } from 'react-router-dom'
 import { useExpenses } from '../hooks/useExpenses'
 import { useAuth } from '../context/AuthContext'
@@ -44,9 +47,18 @@ export function ExpensesPage() {
   const [modalOpen, setModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState('add')
   const [selectedExpense, setSelectedExpense] = useState(null)
-  const [selectedMonth, setSelectedMonth] = useState(location.state?.filterMonth || '')
-  const [selectedYear, setSelectedYear] = useState(location.state?.filterYear || '')
+  const [selectedMonth, setSelectedMonth] = useState(location.state?.filterMonth !== undefined ? location.state.filterMonth : dayjs().format('MM'))
+  const [selectedYear, setSelectedYear] = useState(location.state?.filterYear !== undefined ? location.state.filterYear : dayjs().format('YYYY'))
   const [messageApi, contextHolder] = message.useMessage()
+
+  const lastAddedDate = useMemo(() => {
+    if (!expenses || expenses.length === 0) return null;
+    const validDates = expenses
+      .map(e => e.createdAt ? new Date(e.createdAt).getTime() : new Date(e.date).getTime())
+      .filter(t => !isNaN(t));
+    if (validDates.length === 0) return null;
+    return new Date(Math.max(...validDates));
+  }, [expenses]);
 
   useEffect(() => {
     if (location.state) {
@@ -57,6 +69,7 @@ export function ExpensesPage() {
 
   const availableYears = useMemo(() => {
     const years = new Set(expenses.map(e => (e.date ? dayjs(e.date).format('YYYY') : null)).filter(Boolean))
+    years.add(dayjs().format('YYYY'))
     return [{ value: '', label: 'All Years' }, ...Array.from(years).sort().reverse().map(y => ({ value: y, label: y }))]
   }, [expenses])
 
@@ -119,7 +132,14 @@ export function ExpensesPage() {
       {/* Greeting */}
       <div className="greeting-section">
         <Title level={2} className="greeting-title">{getGreeting()}, {user?.name || user?.username || 'User'}</Title>
-        <Text className="greeting-sub">Manage and track your expenses below</Text>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <Text className="greeting-sub">Manage and track your expenses below</Text>
+          {lastAddedDate && (
+            <Text type="secondary" style={{ fontSize: '0.9rem' }}>
+              Last expense added: {dayjs(lastAddedDate).fromNow()}
+            </Text>
+          )}
+        </div>
       </div>
 
       {/* Action Bar */}
