@@ -1,7 +1,8 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Typography, Button, Select, message, Upload } from 'antd'
 import { PlusOutlined, FilterOutlined, UploadOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
+import { useLocation } from 'react-router-dom'
 import { useExpenses } from '../hooks/useExpenses'
 import { useAuth } from '../context/AuthContext'
 import { ExpenseModal } from '../components/ExpenseModal'
@@ -35,12 +36,20 @@ const MONTHS = [
 export function ExpensesPage() {
   const { user } = useAuth()
   const { expenses, loading, addExpense, updateExpense, deleteExpense, importExpense } = useExpenses(user?.id)
+  const location = useLocation()
   const [modalOpen, setModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState('add')
   const [selectedExpense, setSelectedExpense] = useState(null)
-  const [selectedMonth, setSelectedMonth] = useState('')
-  const [selectedYear, setSelectedYear] = useState('')
+  const [selectedMonth, setSelectedMonth] = useState(location.state?.filterMonth || '')
+  const [selectedYear, setSelectedYear] = useState(location.state?.filterYear || '')
   const [messageApi, contextHolder] = message.useMessage()
+
+  useEffect(() => {
+    if (location.state) {
+      if (location.state.filterMonth !== undefined) setSelectedMonth(location.state.filterMonth)
+      if (location.state.filterYear !== undefined) setSelectedYear(location.state.filterYear)
+    }
+  }, [location.state])
 
   const availableYears = useMemo(() => {
     const years = new Set(expenses.map(e => (e.date ? dayjs(e.date).format('YYYY') : null)).filter(Boolean))
@@ -161,7 +170,13 @@ export function ExpensesPage() {
       </div>
 
       {/* Expense List */}
-      <ExpenseList expenses={filteredExpenses} loading={loading} onRowClick={openEditModal} />
+      <ExpenseList 
+        expenses={filteredExpenses} 
+        loading={loading} 
+        onRowClick={openEditModal} 
+        initialAmountSortOrder={location.state?.sortAmount || 'default'}
+        initialDateSortOrder={location.state?.sortDate || 'desc'}
+      />
 
       {/* Add / Edit Modal */}
       <ExpenseModal

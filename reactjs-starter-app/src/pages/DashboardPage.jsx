@@ -148,23 +148,124 @@ export function DashboardPage() {
     })
   }, [expenses, lineYear, currentYear, currentMonth])
 
+  const stats = useMemo(() => {
+    if (!expenses || !expenses.length) return null;
+
+    const monthlyData = {};
+    let maxExpense = null;
+
+    expenses.forEach(e => {
+      const amt = Number(e.amount);
+      if (!maxExpense || amt > Number(maxExpense.amount)) {
+        maxExpense = e;
+      }
+
+      if (e.date) {
+        const d = dayjs(e.date);
+        const monthYear = d.format('MM-YYYY');
+        if (!monthlyData[monthYear]) {
+          monthlyData[monthYear] = { 
+            amount: 0, 
+            count: 0, 
+            label: d.format('MMM YYYY'),
+            rawMonth: d.format('MM'),
+            rawYear: d.format('YYYY')
+          };
+        }
+        monthlyData[monthYear].amount += amt;
+        monthlyData[monthYear].count += 1;
+      }
+    });
+
+    const months = Object.values(monthlyData);
+    if (!months.length) return null;
+
+    months.sort((a, b) => b.amount - a.amount);
+    const mostExpensiveMonth = months[0];
+    const leastExpensiveMonth = months[months.length - 1];
+
+    months.sort((a, b) => b.count - a.count);
+    const mostTransactionsMonth = months[0];
+
+    return {
+      mostExpensiveMonth,
+      leastExpensiveMonth,
+      mostTransactionsMonth,
+      maxExpense
+    };
+  }, [expenses]);
+
+  const handleCardClick = (type) => {
+    if (!stats) return;
+    
+    let stateParams = {};
+
+    switch(type) {
+      case 'mostExpensive':
+        if (!stats.mostExpensiveMonth) return;
+        stateParams = { filterMonth: stats.mostExpensiveMonth.rawMonth, filterYear: stats.mostExpensiveMonth.rawYear, sortAmount: 'desc', sortDate: 'default' };
+        break;
+      case 'leastExpensive':
+        if (!stats.leastExpensiveMonth) return;
+        stateParams = { filterMonth: stats.leastExpensiveMonth.rawMonth, filterYear: stats.leastExpensiveMonth.rawYear, sortAmount: 'asc', sortDate: 'default' };
+        break;
+      case 'mostTransactions':
+        if (!stats.mostTransactionsMonth) return;
+        stateParams = { filterMonth: stats.mostTransactionsMonth.rawMonth, filterYear: stats.mostTransactionsMonth.rawYear, sortAmount: 'default', sortDate: 'desc' };
+        break;
+      case 'largestExpense':
+        if (!stats.maxExpense || !stats.maxExpense.date) return;
+        const d = dayjs(stats.maxExpense.date);
+        stateParams = { filterMonth: d.format('MM'), filterYear: d.format('YYYY'), sortAmount: 'desc', sortDate: 'default' };
+        break;
+      default:
+        return;
+    }
+    navigate('/expenses', { state: stateParams });
+  }
+
   if (loading) {
     return <PageLoader />
   }
 
   return (
     <div className="dashboard-page">
-      <div className="dashboard-banner">
-        <div className="dashboard-banner-content">
-          <div className="dashboard-banner-text">
-            <Title level={2} style={{ color: 'white', margin: 0, fontWeight: 600 }}>
-              {getGreeting()}, {user?.name || user?.username || 'User'}
-            </Title>
-            <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: '1rem' }}>Insights and analytics for every rupee</Text>
+      <div className="dashboard-top-section">
+        <div className="dashboard-banner">
+          <div className="dashboard-banner-content">
+            <div className="dashboard-banner-text">
+              <Title level={2} style={{ color: 'white', margin: 0, fontWeight: 600 }}>
+                {getGreeting()}, {user?.name || user?.username || 'User'}
+              </Title>
+              <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: '1rem' }}>Insights and analytics for every rupee</Text>
+            </div>
+            <Button size="large" className="track-now-btn" onClick={() => navigate('/expenses')}>
+              Track now
+            </Button>
           </div>
-          <Button size="large" className="track-now-btn" onClick={() => navigate('/expenses')}>
-            Track now
-          </Button>
+        </div>
+
+        <div className="dashboard-stats-grid">
+          <div className="stat-card" onClick={() => handleCardClick('mostExpensive')}>
+            <div className="stat-title">Most Expensive Month</div>
+            <div className="stat-value">₹{stats?.mostExpensiveMonth?.amount.toLocaleString('en-IN') || 0}</div>
+            <div className="stat-desc">{stats?.mostExpensiveMonth?.label || '-'}</div>
+          </div>
+          <div className="stat-card" onClick={() => handleCardClick('leastExpensive')}>
+            <div className="stat-title">Least Expensive Month</div>
+            <div className="stat-value">₹{stats?.leastExpensiveMonth?.amount.toLocaleString('en-IN') || 0}</div>
+            <div className="stat-desc">{stats?.leastExpensiveMonth?.label || '-'}</div>
+          </div>
+          <div className="stat-card" onClick={() => handleCardClick('mostTransactions')}>
+            <div className="stat-title">Most Transactions</div>
+            <div className="stat-value">{stats?.mostTransactionsMonth?.count || 0}</div>
+            <div className="stat-desc">{stats?.mostTransactionsMonth?.label || '-'}</div>
+          </div>
+          <div className="stat-card" onClick={() => handleCardClick('largestExpense')}>
+            <div className="stat-title">Largest Expense</div>
+            <div className="stat-value">₹{Number(stats?.maxExpense?.amount || 0).toLocaleString('en-IN')}</div>
+            <div className="stat-desc">{stats?.maxExpense?.date ? dayjs(stats.maxExpense.date).format('DD MMM YYYY') : '-'}</div>
+          </div>
         </div>
       </div>
 

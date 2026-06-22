@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { List, Pagination, Empty, Typography, Dropdown } from 'antd'
 import {
   CalendarOutlined,
@@ -48,13 +48,18 @@ function getAmountTierClass(amount) {
  *   loading     {boolean}
  *   onRowClick  {(expense) => void}
  */
-export function ExpenseList({ expenses, loading, onRowClick }) {
+export function ExpenseList({ expenses, loading, onRowClick, initialAmountSortOrder = 'default', initialDateSortOrder = 'desc' }) {
   const [currentPage, setCurrentPage] = useState(1)
-  const [amountSortOrder, setAmountSortOrder] = useState('default')
-  const [dateSortOrder, setDateSortOrder] = useState('desc') // Default sort by date
+  const [amountSortOrder, setAmountSortOrder] = useState(initialAmountSortOrder)
+  const [dateSortOrder, setDateSortOrder] = useState(initialDateSortOrder)
   const [selectedCategory, setSelectedCategory] = useState('All')
 
   const tooltipRef = useRef(null)
+
+  useEffect(() => {
+    setAmountSortOrder(initialAmountSortOrder);
+    setDateSortOrder(initialDateSortOrder);
+  }, [initialAmountSortOrder, initialDateSortOrder]);
 
   const sortedExpenses = useMemo(() => {
     let result = [...expenses]
