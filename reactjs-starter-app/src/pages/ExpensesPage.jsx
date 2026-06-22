@@ -1,10 +1,12 @@
 import { useState, useMemo, useEffect } from 'react'
-import { Typography, Button, Select, message, Upload } from 'antd'
-import { PlusOutlined, FilterOutlined, UploadOutlined } from '@ant-design/icons'
+import { Typography, Button, Select, message, Upload, Spin } from 'antd'
+import { PlusOutlined, FilterOutlined, UploadOutlined, LoadingOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import { useLocation } from 'react-router-dom'
 import { useExpenses } from '../hooks/useExpenses'
 import { useAuth } from '../context/AuthContext'
+import { useCurrency } from '../context/CurrencyContext'
+import { useExchangeRates } from '../hooks/useExchangeRates'
 import { ExpenseModal } from '../components/ExpenseModal'
 import { ExpenseList } from '../components/ExpenseList'
 
@@ -36,6 +38,8 @@ const MONTHS = [
 export function ExpensesPage() {
   const { user } = useAuth()
   const { expenses, loading, addExpense, updateExpense, deleteExpense, importExpense } = useExpenses(user?.id)
+  const { currency } = useCurrency()
+  const { convertToDefault, ratesLoading } = useExchangeRates(currency.code)
   const location = useLocation()
   const [modalOpen, setModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState('add')
@@ -68,8 +72,11 @@ export function ExpensesPage() {
   }, [expenses, selectedMonth, selectedYear])
 
   const grandTotal = useMemo(() => {
-    return filteredExpenses.reduce((sum, e) => sum + Number(e.amount), 0)
-  }, [filteredExpenses])
+    return filteredExpenses.reduce((sum, e) => {
+      const converted = convertToDefault(Number(e.amount), e.currency || 'INR')
+      return sum + (converted ?? 0)
+    }, 0)
+  }, [filteredExpenses, convertToDefault])
 
   function openAddModal() {
     setModalMode('add')
@@ -149,8 +156,15 @@ export function ExpensesPage() {
         </Upload>
 
         <div className="action-bar-right" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <div className="grand-total" style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-main)' }}>
-            Total: ₹{grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          <div className="grand-total" style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: 6 }}>
+            Total:{' '}
+            {ratesLoading ? (
+              <Spin indicator={<LoadingOutlined style={{ fontSize: 14 }} spin />} />
+            ) : (
+              <span>
+                {currency.symbol}{grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+            )}
           </div>
           <Select
             value={selectedMonth}

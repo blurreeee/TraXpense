@@ -13,6 +13,7 @@ import {
 } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import RupeeLoader from './RupeeLoader'
+import { getCurrency } from '../utils/currencies'
 
 const { Text } = Typography
 
@@ -248,10 +249,19 @@ export function ExpenseList({ expenses, loading, onRowClick, initialAmountSortOr
 
                 <div className="expense-col expense-col-amount">
                   <div className={`expense-amount ${amountClass}`}>
-                    {Number(item.amount) < 0 ? '+₹' : '₹'}{Math.abs(Number(item.amount)).toLocaleString('en-IN', {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
+                    {(() => {
+                      const currInfo = getCurrency(item.currency) || { symbol: '₹' }
+                      const isNeg = Number(item.amount) < 0
+                      return (
+                        <>
+                          {isNeg ? `+${currInfo.symbol}` : currInfo.symbol}
+                          {Math.abs(Number(item.amount)).toLocaleString('en-IN', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </>
+                      )
+                    })()}
                   </div>
                   {item.note && (
                     <FileTextOutlined className="note-indicator" />

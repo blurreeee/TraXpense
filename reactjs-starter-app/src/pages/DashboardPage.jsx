@@ -4,6 +4,8 @@ import { PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tool
 import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
 import { useAuth } from '../context/AuthContext'
+import { useCurrency } from '../context/CurrencyContext'
+import { useExchangeRates } from '../hooks/useExchangeRates'
 import { useExpenses } from '../hooks/useExpenses'
 import PageLoader from '../components/PageLoader'
 
@@ -39,7 +41,7 @@ const MONTHS = [
   { value: '12', label: 'December' },
 ]
 
-const CustomTooltip = ({ active, payload, label, coordinate, mousePos, requireExactHover }) => {
+const CustomTooltip = ({ active, payload, label, coordinate, mousePos, requireExactHover, currencySymbol }) => {
   if (active && payload && payload.length) {
     if (requireExactHover && mousePos) {
       const dx = mousePos.x - mousePos.activeX;
@@ -54,7 +56,7 @@ const CustomTooltip = ({ active, payload, label, coordinate, mousePos, requireEx
     return (
       <div className={`custom-tooltip ${isBottomHalf ? 'tooltip-below' : 'tooltip-above'}`}>
         <div className="tooltip-label">{label || payload[0].name}</div>
-        <div className="tooltip-value">₹{payload[0].value.toLocaleString('en-IN', {minimumFractionDigits: 2})}</div>
+        <div className="tooltip-value">{currencySymbol}{payload[0].value.toLocaleString('en-IN', {minimumFractionDigits: 2})}</div>
       </div>
     )
   }
@@ -80,13 +82,13 @@ const CustomDot = (props) => {
       }}
     >
       <circle cx={cx} cy={cy} r={20} fill="transparent" />
-      <circle 
-        cx={cx} 
-        cy={cy} 
-        r={isHovered ? 7 : 5} 
-        fill="#10b981" 
-        stroke="#fff" 
-        strokeWidth={2} 
+      <circle
+        cx={cx}
+        cy={cy}
+        r={isHovered ? 7 : 5}
+        fill="#10b981"
+        stroke="#fff"
+        strokeWidth={2}
         style={{ transition: 'all 0.2s ease' }}
       />
     </g>
@@ -96,7 +98,9 @@ const CustomDot = (props) => {
 export function DashboardPage() {
   const navigate = useNavigate()
   const { user } = useAuth()
+  const { currency } = useCurrency()
   const { expenses, loading } = useExpenses(user?.id)
+  const { convertToDefault, ratesLoading } = useExchangeRates(currency.code)
 
   const currentMonth = dayjs().format('MM')
   const currentYear = dayjs().format('YYYY')
@@ -114,6 +118,9 @@ export function DashboardPage() {
     return Array.from(years).sort().reverse().map(y => ({ value: y, label: y }))
   }, [expenses, currentYear])
 
+  /** Convert a single expense amount to the default currency. */
+  const toDefault = (e) => convertToDefault(Number(e.amount), e.currency || 'INR')
+
   const donutData = useMemo(() => {
     const filtered = expenses.filter(
       e => e.date && dayjs(e.date).format('MM') === donutMonth && dayjs(e.date).format('YYYY') === donutYear
@@ -121,10 +128,13 @@ export function DashboardPage() {
     const grouped = {}
     filtered.forEach(e => {
       const cat = e.description || 'Misc'
-      grouped[cat] = (grouped[cat] || 0) + Number(e.amount)
+      const converted = toDefault(e)
+      if (converted !== null) {
+        grouped[cat] = (grouped[cat] || 0) + converted
+      }
     })
     return Object.entries(grouped).map(([name, value]) => ({ name, value }))
-  }, [expenses, donutMonth, donutYear])
+  }, [expenses, donutMonth, donutYear, convertToDefault])
 
   const totalDonutSpent = useMemo(() => donutData.reduce((sum, item) => sum + item.value, 0), [donutData])
 
@@ -132,10 +142,13 @@ export function DashboardPage() {
     const filtered = expenses.filter(e => e.date && dayjs(e.date).format('YYYY') === lineYear)
     const monthlyTotals = {}
     MONTHS.forEach(m => monthlyTotals[m.label.substring(0, 3)] = 0)
-    
+
     filtered.forEach(e => {
       const monthLabel = dayjs(e.date).format('MMM')
-      monthlyTotals[monthLabel] = (monthlyTotals[monthLabel] || 0) + Number(e.amount)
+      const converted = toDefault(e)
+      if (converted !== null) {
+        monthlyTotals[monthLabel] = (monthlyTotals[monthLabel] || 0) + converted
+      }
     })
 
     return MONTHS.map((m, index) => {
@@ -146,33 +159,38 @@ export function DashboardPage() {
         total: isFuture ? null : monthlyTotals[monthVal]
       }
     })
-  }, [expenses, lineYear, currentYear, currentMonth])
+  }, [expenses, lineYear, currentYear, currentMonth, convertToDefault])
 
   const stats = useMemo(() => {
     if (!expenses || !expenses.length) return null;
 
     const monthlyData = {};
     let maxExpense = null;
+    let maxExpenseConverted = -Infinity;
 
     expenses.forEach(e => {
       const amt = Number(e.amount);
-      if (!maxExpense || amt > Number(maxExpense.amount)) {
-        maxExpense = e;
+      const convertedAmt = convertToDefault(amt, e.currency || 'INR');
+      if (convertedAmt === null) return;
+
+      if (convertedAmt > maxExpenseConverted) {
+        maxExpenseConverted = convertedAmt;
+        maxExpense = { ...e, convertedAmount: convertedAmt };
       }
 
       if (e.date) {
         const d = dayjs(e.date);
         const monthYear = d.format('MM-YYYY');
         if (!monthlyData[monthYear]) {
-          monthlyData[monthYear] = { 
-            amount: 0, 
-            count: 0, 
+          monthlyData[monthYear] = {
+            amount: 0,
+            count: 0,
             label: d.format('MMM YYYY'),
             rawMonth: d.format('MM'),
             rawYear: d.format('YYYY')
           };
         }
-        monthlyData[monthYear].amount += amt;
+        monthlyData[monthYear].amount += convertedAmt;
         monthlyData[monthYear].count += 1;
       }
     });
@@ -193,11 +211,11 @@ export function DashboardPage() {
       mostTransactionsMonth,
       maxExpense
     };
-  }, [expenses]);
+  }, [expenses, convertToDefault]);
 
   const handleCardClick = (type) => {
     if (!stats) return;
-    
+
     let stateParams = {};
 
     switch(type) {
@@ -224,6 +242,10 @@ export function DashboardPage() {
     navigate('/expenses', { state: stateParams });
   }
 
+  /** Format an amount with the default currency symbol. */
+  const fmt = (val) =>
+    `${currency.symbol}${Number(val || 0).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
+
   if (loading) {
     return <PageLoader />
   }
@@ -237,7 +259,9 @@ export function DashboardPage() {
               <Title level={2} style={{ color: 'white', margin: 0, fontWeight: 600 }}>
                 {getGreeting()}, {user?.name || user?.username || 'User'}
               </Title>
-              <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: '1rem' }}>Insights and analytics for every rupee</Text>
+              <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: '1rem' }}>
+                Insights and analytics in {currency.name}
+              </Text>
             </div>
             <Button size="large" className="track-now-btn" onClick={() => navigate('/expenses')}>
               Track now
@@ -248,12 +272,12 @@ export function DashboardPage() {
         <div className="dashboard-stats-grid">
           <div className="stat-card" onClick={() => handleCardClick('mostExpensive')}>
             <div className="stat-title">Most Expensive Month</div>
-            <div className="stat-value">₹{stats?.mostExpensiveMonth?.amount.toLocaleString('en-IN') || 0}</div>
+            <div className="stat-value">{ratesLoading ? '—' : fmt(stats?.mostExpensiveMonth?.amount)}</div>
             <div className="stat-desc">{stats?.mostExpensiveMonth?.label || '-'}</div>
           </div>
           <div className="stat-card" onClick={() => handleCardClick('leastExpensive')}>
             <div className="stat-title">Least Expensive Month</div>
-            <div className="stat-value">₹{stats?.leastExpensiveMonth?.amount.toLocaleString('en-IN') || 0}</div>
+            <div className="stat-value">{ratesLoading ? '—' : fmt(stats?.leastExpensiveMonth?.amount)}</div>
             <div className="stat-desc">{stats?.leastExpensiveMonth?.label || '-'}</div>
           </div>
           <div className="stat-card" onClick={() => handleCardClick('mostTransactions')}>
@@ -263,7 +287,7 @@ export function DashboardPage() {
           </div>
           <div className="stat-card" onClick={() => handleCardClick('largestExpense')}>
             <div className="stat-title">Largest Expense</div>
-            <div className="stat-value">₹{Number(stats?.maxExpense?.amount || 0).toLocaleString('en-IN')}</div>
+            <div className="stat-value">{ratesLoading ? '—' : fmt(stats?.maxExpense?.convertedAmount)}</div>
             <div className="stat-desc">{stats?.maxExpense?.date ? dayjs(stats.maxExpense.date).format('DD MMM YYYY') : '-'}</div>
           </div>
         </div>
@@ -282,7 +306,7 @@ export function DashboardPage() {
           <div className="donut-chart-wrapper">
             {donutData.length > 0 ? (
               <ResponsiveContainer width="100%" height={280}>
-                <PieChart 
+                <PieChart
                   onMouseMove={(e) => {
                     if (e && e.chartX != null && e.chartY != null) setDonutMousePos({ x: e.chartX, y: e.chartY })
                   }}
@@ -302,12 +326,12 @@ export function DashboardPage() {
                       <Cell key={`cell-${index}`} fill={CATEGORY_COLORS[entry.name] || CATEGORY_COLORS.Misc} />
                     ))}
                   </Pie>
-                  <RechartsTooltip 
-                    content={<CustomTooltip />} 
-                    position={donutMousePos} 
-                    isAnimationActive={false} 
-                    offset={0} 
-                    wrapperStyle={{ pointerEvents: 'none', zIndex: 100 }} 
+                  <RechartsTooltip
+                    content={<CustomTooltip currencySymbol={currency.symbol} />}
+                    position={donutMousePos}
+                    isAnimationActive={false}
+                    offset={0}
+                    wrapperStyle={{ pointerEvents: 'none', zIndex: 100 }}
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -316,7 +340,7 @@ export function DashboardPage() {
             )}
             {donutData.length > 0 && (
               <div className="donut-total">
-                <div className="donut-total-amount">₹{totalDonutSpent.toLocaleString('en-IN')}</div>
+                <div className="donut-total-amount">{currency.symbol}{totalDonutSpent.toLocaleString('en-IN', { minimumFractionDigits: 0 })}</div>
                 <div className="donut-total-label">total spent</div>
               </div>
             )}
@@ -342,35 +366,35 @@ export function DashboardPage() {
             <Text strong style={{ fontSize: '1.1rem' }}>Monthly expenses</Text>
             <Select value={lineYear} onChange={setLineYear} options={availableYears} size="small" className="chart-select" />
           </div>
-          <div 
-            className="line-chart-wrapper" 
+          <div
+            className="line-chart-wrapper"
             style={{ marginTop: 24, position: 'relative' }}
           >
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart 
-                data={lineData} 
+              <LineChart
+                data={lineData}
                 margin={{ top: 10, right: 20, left: -10, bottom: 0 }}
               >
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-subtle)" />
-                <XAxis 
-                  dataKey="month" 
-                  axisLine={{ stroke: 'var(--border)' }} 
-                  tickLine={{ stroke: 'var(--border)' }} 
-                  tick={{ fontSize: 12, fill: 'var(--text-secondary)' }} 
-                  dy={10} 
+                <XAxis
+                  dataKey="month"
+                  axisLine={{ stroke: 'var(--border)' }}
+                  tickLine={{ stroke: 'var(--border)' }}
+                  tick={{ fontSize: 12, fill: 'var(--text-secondary)' }}
+                  dy={10}
                 />
-                <YAxis 
-                  axisLine={{ stroke: 'var(--border)' }} 
-                  tickLine={{ stroke: 'var(--border)' }} 
-                  tickFormatter={(value) => `₹${value >= 1000 ? (value/1000) + 'k' : value}`} 
+                <YAxis
+                  axisLine={{ stroke: 'var(--border)' }}
+                  tickLine={{ stroke: 'var(--border)' }}
+                  tickFormatter={(value) => `${currency.symbol}${value >= 1000 ? (value/1000).toFixed(1) + 'k' : value}`}
                   tick={{ fontSize: 12, fill: 'var(--text-secondary)' }}
                   width={70}
                   dx={-5}
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="total" 
-                  stroke="#10b981" 
+                <Line
+                  type="monotone"
+                  dataKey="total"
+                  stroke="#10b981"
                   strokeWidth={3}
                   connectNulls={false}
                   activeDot={false}
@@ -380,18 +404,18 @@ export function DashboardPage() {
             </ResponsiveContainer>
 
             {hoveredLineNode && (
-              <div 
-                style={{ 
-                  position: 'absolute', 
-                  left: hoveredLineNode.cx, 
-                  top: hoveredLineNode.cy, 
-                  pointerEvents: 'none', 
-                  zIndex: 100 
+              <div
+                style={{
+                  position: 'absolute',
+                  left: hoveredLineNode.cx,
+                  top: hoveredLineNode.cy,
+                  pointerEvents: 'none',
+                  zIndex: 100
                 }}
               >
                 <div className={`custom-tooltip ${hoveredLineNode.cy > 140 ? 'tooltip-below' : 'tooltip-above'}`}>
                   <div className="tooltip-label">{hoveredLineNode.payload.month}</div>
-                  <div className="tooltip-value">₹{hoveredLineNode.value.toLocaleString('en-IN', {minimumFractionDigits: 2})}</div>
+                  <div className="tooltip-value">{currency.symbol}{hoveredLineNode.value.toLocaleString('en-IN', {minimumFractionDigits: 2})}</div>
                 </div>
               </div>
             )}

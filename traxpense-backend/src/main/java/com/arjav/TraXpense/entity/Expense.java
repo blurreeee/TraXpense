@@ -25,6 +25,9 @@ public class Expense {
     @Column(length = 500)
     private String note;
 
+    @Column(name = "currency", length = 10, columnDefinition = "varchar(10) default 'INR'")
+    private String currency = "INR";
+
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
@@ -58,6 +61,8 @@ public class Expense {
     public void setDate(LocalDate date) { this.date = date; }
     public String getNote() { return note; }
     public void setNote(String note) { this.note = note; }
+    public String getCurrency() { return currency; }
+    public void setCurrency(String currency) { this.currency = currency; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 }

@@ -10,6 +10,7 @@ public class UserResponseDTO {
     private String username;
     private String email;
     private Boolean isDarkTheme;
+    private String defaultCurrency;
     private LocalDateTime usernameChangedAt;
 
     public UserResponseDTO() {}
@@ -20,6 +21,7 @@ public class UserResponseDTO {
         this.username = user.getUsername();
         this.email = user.getEmail();
         this.isDarkTheme = user.getIsDarkTheme();
+        this.defaultCurrency = user.getDefaultCurrency();
         this.usernameChangedAt = user.getUsernameChangedAt();
     }
 
@@ -61,6 +63,14 @@ public class UserResponseDTO {
 
     public void setIsDarkTheme(Boolean isDarkTheme) {
         this.isDarkTheme = isDarkTheme;
+    }
+
+    public String getDefaultCurrency() {
+        return defaultCurrency;
+    }
+
+    public void setDefaultCurrency(String defaultCurrency) {
+        this.defaultCurrency = defaultCurrency;
     }
 
     public LocalDateTime getUsernameChangedAt() {

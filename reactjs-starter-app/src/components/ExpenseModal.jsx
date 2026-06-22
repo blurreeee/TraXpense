@@ -22,6 +22,8 @@ import {
   AppstoreOutlined,
 } from '@ant-design/icons'
 import dayjs from 'dayjs'
+import { useCurrency } from '../context/CurrencyContext'
+import { CURRENCIES } from '../utils/currencies'
 
 const { TextArea } = Input
 
@@ -43,6 +45,18 @@ const EXPENSE_CATEGORIES = Object.entries(CATEGORY_ICON_MAP).map(([value, icon])
   ),
 }))
 
+const CURRENCY_OPTIONS = CURRENCIES.map(c => ({
+  value: c.code,
+  searchText: `${c.code} ${c.name} ${c.symbol}`.toLowerCase(),
+  label: (
+    <div className="currency-option">
+      <span className="currency-flag">{c.flag}</span>
+      <span className="currency-name">{c.name}</span>
+      <span className="currency-symbol-badge">{c.symbol}</span>
+    </div>
+  ),
+}))
+
 /**
  * ExpenseModal — shared Add / Edit modal.
  *
@@ -59,24 +73,33 @@ export function ExpenseModal({ open, mode, expense, onSave, onDelete, onCancel }
   const isEdit = mode === 'edit'
   const [loading, setLoading] = useState(false)
   const [isRefund, setIsRefund] = useState(false)
+  const [selectedCurrency, setSelectedCurrency] = useState('INR')
+  const { currency: defaultCurrency } = useCurrency()
 
   useEffect(() => {
     if (open) {
       if (isEdit && expense) {
         const isExpRefund = Number(expense.amount) < 0
         setIsRefund(isExpRefund)
+        const expCurrency = expense.currency || defaultCurrency.code
+        setSelectedCurrency(expCurrency)
         form.setFieldsValue({
           date: expense.date ? dayjs(expense.date) : null,
           description: expense.description,
           amount: Math.abs(Number(expense.amount)),
           note: expense.note || '',
+          currency: expCurrency,
         })
       } else {
-        form.resetFields()
         setIsRefund(false)
+        setSelectedCurrency(defaultCurrency.code)
+        form.resetFields()
+        form.setFieldsValue({ currency: defaultCurrency.code })
       }
     }
-  }, [open, isEdit, expense, form])
+  }, [open, isEdit, expense, form, defaultCurrency.code])
+
+  const currentCurrencyInfo = CURRENCIES.find(c => c.code === selectedCurrency) || defaultCurrency
 
   async function handleSave() {
     try {
@@ -87,6 +110,7 @@ export function ExpenseModal({ open, mode, expense, onSave, onDelete, onCancel }
         description: values.description,
         amount: isRefund ? -Math.abs(values.amount) : Math.abs(values.amount),
         note: values.note?.trim() || '',
+        currency: values.currency || defaultCurrency.code,
       })
     } catch {
       // validation error — Ant Design shows inline messages
@@ -184,8 +208,26 @@ export function ExpenseModal({ open, mode, expense, onSave, onDelete, onCancel }
         </Form.Item>
 
         <Form.Item
+          name="currency"
+          label="Currency"
+          rules={[{ required: true, message: 'Please select a currency' }]}
+        >
+          <Select
+            showSearch
+            placeholder="Select currency"
+            options={CURRENCY_OPTIONS}
+            style={{ width: '100%' }}
+            filterOption={(input, option) =>
+              option.searchText?.includes(input.toLowerCase())
+            }
+            onChange={setSelectedCurrency}
+            popupClassName="currency-dropdown-popup"
+          />
+        </Form.Item>
+
+        <Form.Item
           name="amount"
-          label="Amount (₹)"
+          label={`Amount (${currentCurrencyInfo.symbol})`}
           rules={[
             { required: true, message: 'Please enter an amount' },
           ]}
@@ -194,7 +236,7 @@ export function ExpenseModal({ open, mode, expense, onSave, onDelete, onCancel }
             style={{ width: '100%' }}
             precision={2}
             placeholder="0.00"
-            prefix="₹"
+            prefix={currentCurrencyInfo.symbol}
           />
         </Form.Item>
 

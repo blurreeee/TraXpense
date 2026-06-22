@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Layout, Menu, Avatar, Typography, Button, Dropdown, Switch, message } from 'antd'
+import { Layout, Menu, Avatar, Typography, Button, Dropdown, Switch, message, Modal, Select } from 'antd'
 import {
   DashboardOutlined,
   WalletOutlined,
@@ -11,11 +11,14 @@ import {
   AccountBookFilled,
   LogoutOutlined,
   LeftOutlined,
-  RightOutlined
+  RightOutlined,
+  GlobalOutlined,
 } from '@ant-design/icons'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useTheme } from '../context/ThemeContext'
 import { useAuth } from '../context/AuthContext'
+import { useCurrency } from '../context/CurrencyContext'
+import { CURRENCIES } from '../utils/currencies'
 import { ChangeUsernameModal } from './ChangeUsernameModal'
 
 const { Header, Sider, Content } = Layout
@@ -35,10 +38,14 @@ export function AppLayout({ children }) {
   const [collapsed, setCollapsed] = useState(false)
   const [avatarPopoverOpen, setAvatarPopoverOpen] = useState(false)
   const [usernameModalOpen, setUsernameModalOpen] = useState(false)
+  const [currencyModalOpen, setCurrencyModalOpen] = useState(false)
+  const [selectedCurrencyCode, setSelectedCurrencyCode] = useState('INR')
+  const [currencyLoading, setCurrencyLoading] = useState(false)
   const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768)
   const [mobileOpen, setMobileOpen] = useState(false)
   const { isDark, toggleTheme } = useTheme()
   const { user, logout, updateUsername } = useAuth()
+  const { currency, updateCurrency } = useCurrency()
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -67,6 +74,24 @@ export function AppLayout({ children }) {
   const openUsernameModal = () => {
     setAvatarPopoverOpen(false)
     setUsernameModalOpen(true)
+  }
+
+  const openCurrencyModal = () => {
+    setAvatarPopoverOpen(false)
+    setSelectedCurrencyCode(currency.code)
+    setCurrencyModalOpen(true)
+  }
+
+  const handleCurrencySave = async () => {
+    setCurrencyLoading(true)
+    const result = await updateCurrency(selectedCurrencyCode)
+    setCurrencyLoading(false)
+    if (result.success) {
+      message.success('Default currency updated!')
+      setCurrencyModalOpen(false)
+    } else {
+      message.error(result.error || 'Failed to update currency')
+    }
   }
 
   const handleUsernameSave = async (newUsername) => {
@@ -119,6 +144,19 @@ export function AppLayout({ children }) {
               className="theme-switch"
             />
           </div>
+        </div>
+      ),
+    },
+    { type: 'divider' },
+    {
+      key: 'currency',
+      icon: <GlobalOutlined />,
+      label: (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+          <span>Default Currency</span>
+          <span style={{ fontSize: 12, opacity: 0.65, fontFamily: 'monospace' }}>
+            {currency.flag} {currency.code}
+          </span>
         </div>
       ),
     },
@@ -185,6 +223,7 @@ export function AppLayout({ children }) {
                 items: dropdownItems,
                 onClick: ({ key }) => {
                   if (key === 'user-info') openUsernameModal()
+                  if (key === 'currency') openCurrencyModal()
                   if (key === 'logout') logout()
                 },
               }}
@@ -215,6 +254,47 @@ export function AppLayout({ children }) {
         onSave={handleUsernameSave}
         onCancel={() => setUsernameModalOpen(false)}
       />
+
+      {/* ── Currency Change Modal ── */}
+      <Modal
+        open={currencyModalOpen}
+        title={
+          <span><GlobalOutlined style={{ marginRight: 8 }} />Default Currency</span>
+        }
+        onCancel={() => setCurrencyModalOpen(false)}
+        onOk={handleCurrencySave}
+        okText="Save"
+        confirmLoading={currencyLoading}
+        width={420}
+        className="currency-change-modal"
+      >
+        <p style={{ marginBottom: 12, opacity: 0.7, fontSize: 13 }}>
+          Dashboard totals and analytics will display in this currency.
+          Existing expense amounts are not changed.
+        </p>
+        <Select
+          value={selectedCurrencyCode}
+          onChange={setSelectedCurrencyCode}
+          showSearch
+          style={{ width: '100%' }}
+          size="large"
+          filterOption={(input, option) =>
+            option.searchText?.includes(input.toLowerCase())
+          }
+          options={CURRENCIES.map(c => ({
+            value: c.code,
+            searchText: `${c.code} ${c.name} ${c.symbol}`.toLowerCase(),
+            label: (
+              <div className="currency-option">
+                <span className="currency-flag">{c.flag}</span>
+                <span className="currency-name">{c.name}</span>
+                <span className="currency-symbol-badge">{c.symbol}</span>
+              </div>
+            ),
+          }))}
+          popupClassName="currency-dropdown-popup"
+        />
+      </Modal>
     </Layout>
   )
 }

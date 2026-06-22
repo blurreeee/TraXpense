@@ -3,11 +3,14 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { ConfigProvider, theme as antTheme } from 'antd'
 import { ThemeProvider, useTheme } from './context/ThemeContext'
 import { AuthProvider } from './context/AuthContext'
+import { CurrencyProvider } from './context/CurrencyContext'
 import { AppLayout } from './components/AppLayout'
 import ProtectedRoute from './components/ProtectedRoute'
 import { LoginPage } from './pages/LoginPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { ExpensesPage } from './pages/ExpensesPage'
+import { CurrencySetupModal } from './components/CurrencySetupModal'
+import { useAuth } from './context/AuthContext'
 import RupeeLoader from './components/RupeeLoader'
 
 const BASE_TOKENS = {
@@ -90,6 +93,7 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <AppLayout>
+                <CurrencySetupGate />
                 <Routes>
                   <Route path="/" element={<Navigate to="/dashboard" replace />} />
                   <Route path="/dashboard" element={<DashboardPage />} />
@@ -104,11 +108,20 @@ function AppContent() {
   )
 }
 
+/** Shows the currency setup modal when user has no default currency saved. */
+function CurrencySetupGate() {
+  const { user } = useAuth()
+  const needsSetup = user && !user.defaultCurrency
+  return <CurrencySetupModal open={!!needsSetup} />
+}
+
 export default function App() {
   return (
     <AuthProvider>
       <ThemeProvider>
-        <AppContent />
+        <CurrencyProvider>
+          <AppContent />
+        </CurrencyProvider>
       </ThemeProvider>
     </AuthProvider>
   )

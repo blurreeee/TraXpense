@@ -33,6 +33,7 @@ public class ExpenseService {
         expense.setAmount(dto.getAmount());
         expense.setDate(dto.getDate());
         expense.setNote(dto.getNote());
+        expense.setCurrency(dto.getCurrency() != null && !dto.getCurrency().isBlank() ? dto.getCurrency().toUpperCase() : "INR");
         return expenseRepository.save(expense);
     }
 
@@ -45,6 +46,9 @@ public class ExpenseService {
         existing.setAmount(dto.getAmount());
         existing.setDate(dto.getDate());
         existing.setNote(dto.getNote());
+        if (dto.getCurrency() != null && !dto.getCurrency().isBlank()) {
+            existing.setCurrency(dto.getCurrency().toUpperCase());
+        }
         return expenseRepository.save(existing);
     }
 

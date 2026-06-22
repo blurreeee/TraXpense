@@ -58,6 +58,17 @@ public class UserService {
         return new UserResponseDTO(savedUser);
     }
 
+    public UserResponseDTO updateDefaultCurrency(Long userId, String currency) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        if (currency == null || currency.isBlank()) {
+            throw new RuntimeException("Currency code is required");
+        }
+        user.setDefaultCurrency(currency.trim().toUpperCase());
+        User savedUser = userRepository.save(user);
+        return new UserResponseDTO(savedUser);
+    }
+
     public UserResponseDTO updateUsername(Long userId, String newUsername) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));

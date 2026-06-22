@@ -45,4 +45,18 @@ public class UserController {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }
     }
+
+    @PutMapping("/{userId}/currency")
+    public ResponseEntity<?> updateCurrency(@PathVariable Long userId, @RequestBody Map<String, String> payload) {
+        try {
+            String currency = payload.get("currency");
+            if (currency == null || currency.isBlank()) {
+                return ResponseEntity.badRequest().body(Map.of("message", "currency is required"));
+            }
+            UserResponseDTO updatedUser = userService.updateDefaultCurrency(userId, currency);
+            return ResponseEntity.ok(updatedUser);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
 }

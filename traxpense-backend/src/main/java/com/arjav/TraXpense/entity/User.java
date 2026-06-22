@@ -27,6 +27,9 @@ public class User {
     @Column(nullable = false, columnDefinition = "boolean default true")
     private Boolean isDarkTheme = true;
 
+    @Column(name = "default_currency", length = 10, columnDefinition = "varchar(10) default 'INR'")
+    private String defaultCurrency = "INR";
+
     @Column(name = "username_changed_at")
     private LocalDateTime usernameChangedAt;
 
@@ -85,6 +88,14 @@ public class User {
 
     public void setIsDarkTheme(Boolean isDarkTheme) {
         this.isDarkTheme = isDarkTheme;
+    }
+
+    public String getDefaultCurrency() {
+        return defaultCurrency;
+    }
+
+    public void setDefaultCurrency(String defaultCurrency) {
+        this.defaultCurrency = defaultCurrency;
     }
 
     public LocalDateTime getUsernameChangedAt() {

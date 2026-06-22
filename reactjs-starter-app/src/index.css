@@ -1599,3 +1599,120 @@ body,
   min-height: 100vh;
   background: var(--bg-base);
 }
+
+/* ══════════════════════════════════════════════════════════
+   CURRENCY DROPDOWN — option rows
+   ══════════════════════════════════════════════════════════ */
+.currency-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 2px 0;
+}
+
+.currency-flag {
+  font-size: 18px;
+  line-height: 1;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.currency-name {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.currency-symbol-badge {
+  font-size: 12px;
+  font-family: monospace;
+  background: rgba(13, 148, 136, 0.12);
+  color: var(--primary);
+  border: 1px solid rgba(13, 148, 136, 0.25);
+  border-radius: 4px;
+  padding: 1px 6px;
+  flex-shrink: 0;
+  font-weight: 600;
+}
+
+/* Ensure the currency popup inherits our theme colours */
+.currency-dropdown-popup .ant-select-item {
+  padding: 8px 12px !important;
+}
+
+.currency-dropdown-popup .ant-select-item-option-active {
+  background: var(--bg-hover) !important;
+}
+
+.currency-dropdown-popup .ant-select-item-option-selected {
+  background: rgba(13, 148, 136, 0.15) !important;
+}
+
+/* ══════════════════════════════════════════════════════════
+   CURRENCY SETUP MODAL (first-login picker)
+   ══════════════════════════════════════════════════════════ */
+.currency-setup-modal .ant-modal-content {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg) !important;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+}
+
+.currency-setup-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 12px 8px 8px;
+}
+
+.currency-setup-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.18), rgba(13, 148, 136, 0.05));
+  border: 1px solid rgba(13, 148, 136, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: var(--primary);
+  margin-bottom: 16px;
+  box-shadow: 0 0 24px rgba(13, 148, 136, 0.2);
+}
+
+.currency-setup-title {
+  color: var(--text-primary) !important;
+  margin-bottom: 8px !important;
+  font-weight: 700 !important;
+}
+
+.currency-setup-sub {
+  color: var(--text-secondary) !important;
+  font-size: 14px;
+  line-height: 1.6;
+  max-width: 340px;
+}
+
+.currency-setup-select .ant-select-selector {
+  background: var(--bg-elevated) !important;
+  border-color: var(--border) !important;
+}
+
+.currency-confirm-btn {
+  font-weight: 600 !important;
+  letter-spacing: 0.3px;
+}
+
+/* ══════════════════════════════════════════════════════════
+   CURRENCY CHANGE MODAL (settings)
+   ══════════════════════════════════════════════════════════ */
+.currency-change-modal .ant-modal-content {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg) !important;
+}
