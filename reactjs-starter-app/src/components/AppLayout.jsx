@@ -13,6 +13,7 @@ import {
   LeftOutlined,
   RightOutlined,
   GlobalOutlined,
+  MenuOutlined,
 } from '@ant-design/icons'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useTheme } from '../context/ThemeContext'
@@ -185,12 +186,14 @@ export function AppLayout({ children }) {
         collapsedWidth={isMobile ? SIDER_WIDTH : SIDER_COLLAPSED_WIDTH}
         className={`app-sider${isMobile ? (mobileOpen ? ' mobile-open' : ' mobile-hidden') : ''}`}
       >
-        <div className="sider-toggle-arrow" onClick={() => {
-          if (isMobile) setMobileOpen(!mobileOpen)
-          else setCollapsed(!collapsed)
-        }}>
-          {isMobile ? (mobileOpen ? <LeftOutlined /> : <RightOutlined />) : (collapsed ? <RightOutlined /> : <LeftOutlined />)}
-        </div>
+        {!(isMobile && !mobileOpen) && (
+          <div className="sider-toggle-arrow" onClick={() => {
+            if (isMobile) setMobileOpen(!mobileOpen)
+            else setCollapsed(!collapsed)
+          }}>
+            {isMobile ? <LeftOutlined /> : (collapsed ? <RightOutlined /> : <LeftOutlined />)}
+          </div>
+        )}
 
         <Menu
           mode="inline"
@@ -211,6 +214,16 @@ export function AppLayout({ children }) {
         {/* ── Fixed Header ── */}
         <Header className="app-header">
           <div className="header-left">
+            {isMobile && (
+              <button
+                type="button"
+                className="mobile-burger"
+                aria-label="Open menu"
+                onClick={() => setMobileOpen(!mobileOpen)}
+              >
+                <MenuOutlined />
+              </button>
+            )}
             <div className="header-logo">
               <img src="/traxpense-logo.png" alt="TraXpense Logo" style={{ width: 88, height: 88, objectFit: 'contain', filter: 'drop-shadow(0 0 4px var(--primary))' }} />
               <Text className="header-brand">TraXpenses</Text>

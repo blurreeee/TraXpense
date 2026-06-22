@@ -160,6 +160,7 @@ export function ExpenseModal({ open, mode, expense, onSave, onDelete, onCancel }
       destroyOnClose
       className="expense-modal"
       width={460}
+      styles={{ content: { background: '#ffffff' }, header: { background: '#ffffff' } }}
     >
       <Form
         form={form}
@@ -177,21 +178,6 @@ export function ExpenseModal({ open, mode, expense, onSave, onDelete, onCancel }
             format="DD MMM YYYY"
             placeholder="Select date"
           />
-        </Form.Item>
-
-        <Form.Item label="Type">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Switch
-              checked={isRefund}
-              onChange={(checked) => {
-                setIsRefund(checked)
-                if (checked) {
-                  form.setFieldsValue({ description: 'Misc' })
-                }
-              }}
-            />
-            <span>Refund</span>
-          </div>
         </Form.Item>
 
         <Form.Item
@@ -238,6 +224,21 @@ export function ExpenseModal({ open, mode, expense, onSave, onDelete, onCancel }
             placeholder="0.00"
             prefix={currentCurrencyInfo.symbol}
           />
+        </Form.Item>
+
+        <Form.Item label="Type">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Switch
+              checked={isRefund}
+              onChange={(checked) => {
+                setIsRefund(checked)
+                if (checked) {
+                  form.setFieldsValue({ description: 'Misc' })
+                }
+              }}
+            />
+            <span>Refund</span>
+          </div>
         </Form.Item>
 
         <Form.Item

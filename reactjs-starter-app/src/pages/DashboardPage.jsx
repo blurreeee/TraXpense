@@ -8,6 +8,7 @@ import { useCurrency } from '../context/CurrencyContext'
 import { useExchangeRates } from '../hooks/useExchangeRates'
 import { useExpenses } from '../hooks/useExpenses'
 import PageLoader from '../components/PageLoader'
+import CurrencyParticles from '../components/CurrencyParticles'
 
 const { Title, Text } = Typography
 
@@ -254,6 +255,7 @@ export function DashboardPage() {
     <div className="dashboard-page">
       <div className="dashboard-top-section">
         <div className="dashboard-banner">
+          <CurrencyParticles />
           <div className="dashboard-banner-content">
             <div className="dashboard-banner-text">
               <Title level={2} style={{ color: 'white', margin: 0, fontWeight: 600 }}>
@@ -299,8 +301,8 @@ export function DashboardPage() {
           <div className="chart-header">
             <Text strong style={{ fontSize: '1.1rem' }}>Monthly breakdown</Text>
             <div className="chart-filters">
-              <Select value={donutMonth} onChange={setDonutMonth} options={MONTHS} size="small" className="chart-select" />
-              <Select value={donutYear} onChange={setDonutYear} options={availableYears} size="small" className="chart-select" style={{ marginLeft: 8 }} />
+              <Select value={donutMonth} onChange={setDonutMonth} options={MONTHS} size="small" className="chart-select month-chart-select" popupClassName="chart-select-popup" />
+              <Select value={donutYear} onChange={setDonutYear} options={availableYears} size="small" className="chart-select" popupClassName="chart-select-popup" style={{ marginLeft: 8 }} />
             </div>
           </div>
           <div className="donut-chart-wrapper">
@@ -364,7 +366,7 @@ export function DashboardPage() {
         <div className="chart-card line-chart-card">
           <div className="chart-header">
             <Text strong style={{ fontSize: '1.1rem' }}>Monthly expenses</Text>
-            <Select value={lineYear} onChange={setLineYear} options={availableYears} size="small" className="chart-select" />
+            <Select value={lineYear} onChange={setLineYear} options={availableYears} size="small" className="chart-select" popupClassName="chart-select-popup" />
           </div>
           <div
             className="line-chart-wrapper"

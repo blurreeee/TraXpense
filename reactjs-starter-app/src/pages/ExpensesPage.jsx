@@ -144,39 +144,44 @@ export function ExpensesPage() {
 
       {/* Action Bar */}
       <div className="action-bar">
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={openAddModal}
-          size="large"
-          className="add-expense-btn"
-        >
-          Add Expense
-        </Button>
-        <Upload
-          accept="image/*"
-          showUploadList={false}
-          beforeUpload={async (file) => {
-            const hide = messageApi.loading('Importing receipt...', 0);
-            const result = await importExpense(file);
-            hide();
-            if (result && result.length > 0) {
-              messageApi.success(`Successfully imported ${result.length} transaction(s)!`);
-            } else if (result && result.length === 0) {
-              messageApi.warning('No new transactions found (all duplicates or nothing extracted).');
-            } else {
-              messageApi.error('Failed to import receipt. Please try again.');
-            }
-            return false; // Prevent default antd upload behavior
-          }}
-        >
-          <Button icon={<UploadOutlined />} size="large" className="import-expense-btn">
-            Import Receipt
+        <div className="action-bar-left">
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={openAddModal}
+            size="large"
+            className="add-expense-btn"
+          >
+            Add Expense
           </Button>
-        </Upload>
+          <div style={{ position: 'relative', display: 'inline-flex' }}>
+            <Upload
+              accept="image/*"
+              showUploadList={false}
+              beforeUpload={async (file) => {
+                const hide = messageApi.loading('Importing receipt...', 0);
+                const result = await importExpense(file);
+                hide();
+                if (result && result.length > 0) {
+                  messageApi.success(`Successfully imported ${result.length} transaction(s)!`);
+                } else if (result && result.length === 0) {
+                  messageApi.warning('No new transactions found (all duplicates or nothing extracted).');
+                } else {
+                  messageApi.error('Failed to import receipt. Please try again.');
+                }
+                return false; // Prevent default antd upload behavior
+              }}
+            >
+              <Button icon={<UploadOutlined />} size="large" className="import-expense-btn">
+                Import Receipt
+              </Button>
+            </Upload>
+            <span className="beta-badge">BETA</span>
+          </div>
+        </div>
 
         <div className="action-bar-right" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <div className="grand-total" style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div className="grand-total" style={{ fontSize: '1.35rem', fontWeight: 700, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: 6 }}>
             Total:{' '}
             {ratesLoading ? (
               <Spin indicator={<LoadingOutlined style={{ fontSize: 14 }} spin />} />

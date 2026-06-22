@@ -148,6 +148,31 @@ body,
   gap: 14px;
 }
 
+/* Mobile burger (3-line) menu trigger — only rendered on mobile */
+.mobile-burger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.mobile-burger:hover,
+.mobile-burger:active {
+  color: var(--primary);
+  background: var(--bg-hover);
+}
+
 .collapse-btn {
   color: var(--text-secondary) !important;
   font-size: 18px !important;
@@ -611,6 +636,28 @@ body,
   gap: 12px;
 }
 
+.action-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.beta-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #065f46;
+  color: #a7f3d0;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 2px 5px;
+  border-radius: 4px;
+  line-height: 1.4;
+  pointer-events: none;
+  z-index: 1;
+}
+
 .add-expense-btn {
   background: linear-gradient(135deg, var(--primary), #059669) !important;
   border: none !important;
@@ -740,20 +787,31 @@ body,
 }
 
 .expense-col-sortable {
+  display: flex;
+  align-items: center;
   cursor: pointer;
   user-select: none;
   gap: 6px;
 }
 
 .sort-icons {
-  display: flex;
+  display: inline-flex;
   flex-direction: column;
-  font-size: 12px;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
   line-height: 1;
 }
 
-.sort-icons .anticon:last-child {
-  margin-top: -2px;
+.sort-icons .anticon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Only stack-correct the negative margin when there are two chevrons */
+.sort-icons .anticon:not(:only-child):last-child {
+  margin-top: -3px;
 }
 
 .expense-index {
@@ -883,10 +941,23 @@ body,
    EXPENSE MODAL
    ══════════════════════════════════════════════════════════ */
 .expense-modal .ant-modal-content {
-  background: var(--bg-surface) !important;
+  background: #ffffff !important;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg) !important;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .expense-modal .ant-modal-content {
+  background: var(--bg-surface) !important;
+}
+
+[data-theme="light"] .expense-form .ant-picker,
+[data-theme="light"] .expense-form .ant-select-selector,
+[data-theme="light"] .expense-form .ant-input-number,
+[data-theme="light"] .expense-form .ant-input,
+[data-theme="light"] .expense-form textarea {
+  background: #ffffff !important;
+  border-color: var(--border) !important;
 }
 
 .expense-modal .ant-modal-header {
@@ -925,10 +996,18 @@ body,
 .expense-form .ant-input-number,
 .expense-form .ant-input,
 .expense-form textarea {
-  background: var(--bg-elevated) !important;
+  background: #ffffff !important;
   border-color: var(--border) !important;
   color: var(--text-primary) !important;
   border-radius: var(--radius-sm) !important;
+}
+
+[data-theme="dark"] .expense-form .ant-picker,
+[data-theme="dark"] .expense-form .ant-select-selector,
+[data-theme="dark"] .expense-form .ant-input-number,
+[data-theme="dark"] .expense-form .ant-input,
+[data-theme="dark"] .expense-form textarea {
+  background: var(--bg-elevated) !important;
 }
 
 .expense-form .ant-picker:hover,
@@ -1031,6 +1110,18 @@ body,
   pointer-events: none;
 }
 
+/* Floating currency-symbol particle canvas — sits above the grid pattern
+   but below the banner text/button. Clicks pass through to the content. */
+.currency-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
 .dashboard-banner-content {
   display: flex;
   flex-direction: column;
@@ -1105,6 +1196,8 @@ body,
   font-weight: 600 !important;
   padding: 0 32px !important;
   border-radius: 6px !important;
+  align-self: flex-end;
+  margin-top: 24px;
 }
 
 .track-now-btn:hover {
@@ -1137,6 +1230,21 @@ body,
 .chart-filters {
   display: flex;
   align-items: center;
+}
+
+/* Year/month filter dropdowns in dashboard charts — widen so values
+   like "2026" or "September" aren't truncated to "20...". */
+.chart-select {
+  min-width: 92px;
+}
+
+.chart-select.month-chart-select {
+  min-width: 120px;
+}
+
+/* Ensure the open dropdown popup is wide enough to show full values */
+.chart-select-popup {
+  min-width: 120px !important;
 }
 
 .donut-chart-wrapper {
@@ -1408,7 +1516,16 @@ body,
 
   /* Header */
   .app-header {
-    padding: 0 16px !important;
+    padding: 0 12px !important;
+  }
+
+  .header-left {
+    gap: 6px;
+  }
+
+  .header-logo img {
+    width: 56px !important;
+    height: 56px !important;
   }
 
   .header-brand {
@@ -1434,6 +1551,12 @@ body,
     flex-direction: column;
     align-items: stretch;
     gap: 10px;
+  }
+
+  .action-bar-left {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
   }
 
   .add-expense-btn,
@@ -1656,10 +1779,14 @@ body,
    CURRENCY SETUP MODAL (first-login picker)
    ══════════════════════════════════════════════════════════ */
 .currency-setup-modal .ant-modal-content {
-  background: var(--bg-surface) !important;
+  background: #ffffff !important;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg) !important;
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+}
+
+[data-theme="dark"] .currency-setup-modal .ant-modal-content {
+  background: var(--bg-surface) !important;
 }
 
 .currency-setup-content {
@@ -1712,7 +1839,11 @@ body,
    CURRENCY CHANGE MODAL (settings)
    ══════════════════════════════════════════════════════════ */
 .currency-change-modal .ant-modal-content {
-  background: var(--bg-surface) !important;
+  background: #ffffff !important;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg) !important;
+}
+
+[data-theme="dark"] .currency-change-modal .ant-modal-content {
+  background: var(--bg-surface) !important;
 }

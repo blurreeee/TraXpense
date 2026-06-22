@@ -69,6 +69,22 @@ function AppContent() {
         itemActiveBg: '#0d9488',
         itemActiveColorDisabled: 'rgba(255, 255, 255, 0.25)',
       },
+      // Force modals to a clean white surface in light mode so inputs
+      // (which sit on white) don't camouflage against a tinted background.
+      ...(isDark
+        ? {}
+        : {
+            Modal: {
+              contentBg: '#ffffff',
+              headerBg: '#ffffff',
+              footerBg: '#ffffff',
+            },
+            // Inputs/selectors use container bg — keep them white in light mode.
+            Input: { colorBgContainer: '#ffffff' },
+            InputNumber: { colorBgContainer: '#ffffff' },
+            Select: { colorBgContainer: '#ffffff' },
+            DatePicker: { colorBgContainer: '#ffffff' },
+          }),
     },
   }
 
