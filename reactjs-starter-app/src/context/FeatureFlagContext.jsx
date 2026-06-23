@@ -1,13 +1,22 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { message } from 'antd'
+import { useAuth } from './AuthContext'
 
 const FeatureFlagContext = createContext()
 
 export function FeatureFlagProvider({ children }) {
-  const [flags, setFlags] = useState({})
-  const [loading, setLoading] = useState(true)
+  const { user } = useAuth()
+  const [flags, setFlags] = useState(user?.featureFlags || {})
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
+    // If we already have flags from the user object, we can skip fetching or just update them quietly
+    // To strictly reduce API calls, we'll only fetch if they aren't available from the user object
+    if (user?.featureFlags) {
+      setFlags(user.featureFlags)
+      return
+    }
+
     const fetchFlags = async () => {
       try {
         const response = await fetch('http://localhost:8080/api/feature-flags')
@@ -24,8 +33,11 @@ export function FeatureFlagProvider({ children }) {
       }
     }
 
-    fetchFlags()
-  }, [])
+    if (!user || !user.featureFlags) {
+      setLoading(true)
+      fetchFlags()
+    }
+  }, [user])
 
   // Provide a function to check if a flag is enabled
   const isFeatureEnabled = (flagKey) => {

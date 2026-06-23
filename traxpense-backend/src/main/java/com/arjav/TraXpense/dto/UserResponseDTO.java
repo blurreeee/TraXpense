@@ -3,6 +3,7 @@ package com.arjav.TraXpense.dto;
 import com.arjav.TraXpense.entity.User;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 public class UserResponseDTO {
     private Long id;
@@ -13,6 +14,7 @@ public class UserResponseDTO {
     private String defaultCurrency;
     private LocalDateTime usernameChangedAt;
     private String role;
+    private Map<String, Boolean> featureFlags;
 
     public UserResponseDTO() {}
 
@@ -89,5 +91,13 @@ public class UserResponseDTO {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public Map<String, Boolean> getFeatureFlags() {
+        return featureFlags;
+    }
+
+    public void setFeatureFlags(Map<String, Boolean> featureFlags) {
+        this.featureFlags = featureFlags;
     }
 }
