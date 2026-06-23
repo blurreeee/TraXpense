@@ -12,7 +12,7 @@ public class FeatureFlagService {
 
     public FeatureFlagService() {
         // Define hardcoded feature flags here
-        hardcodedFlags.put("import_receipt", true);
+        hardcodedFlags.put("import_receipt", false);
         hardcodedFlags.put("default_currency_setting", true);
     }
 
