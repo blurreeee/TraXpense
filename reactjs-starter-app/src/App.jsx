@@ -7,12 +7,10 @@ import { CurrencyProvider } from './context/CurrencyContext'
 import { FeatureFlagProvider } from './context/FeatureFlagContext'
 import { AppLayout } from './components/AppLayout'
 import ProtectedRoute from './components/ProtectedRoute'
-import AdminRoute from './components/AdminRoute'
 import { LoginPage } from './pages/LoginPage'
 import { ResetPasswordPage } from './pages/ResetPasswordPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { ExpensesPage } from './pages/ExpensesPage'
-import { FeatureFlagsPage } from './pages/FeatureFlagsPage'
 import { CurrencySetupModal } from './components/CurrencySetupModal'
 import { useAuth } from './context/AuthContext'
 import RupeeLoader from './components/RupeeLoader'
@@ -119,14 +117,6 @@ function AppContent() {
                   <Route path="/" element={<Navigate to="/dashboard" replace />} />
                   <Route path="/dashboard" element={<DashboardPage />} />
                   <Route path="/expenses" element={<ExpensesPage />} />
-                  <Route 
-                    path="/feature-flags" 
-                    element={
-                      <AdminRoute>
-                        <FeatureFlagsPage />
-                      </AdminRoute>
-                    } 
-                  />
                 </Routes>
               </AppLayout>
             </ProtectedRoute>

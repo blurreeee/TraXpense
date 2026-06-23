@@ -74,10 +74,7 @@ export function AppLayout({ children }) {
 
   const menuItems = [
     { key: 'dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
-    { key: 'expenses', icon: <WalletOutlined />, label: 'Expenses' },
-    ...(user?.role === 'ADMIN' 
-      ? [{ key: 'feature-flags', icon: <SettingOutlined />, label: 'Feature Flags' }] 
-      : [])
+    { key: 'expenses', icon: <WalletOutlined />, label: 'Expenses' }
   ]
 
   const openUsernameModal = () => {
