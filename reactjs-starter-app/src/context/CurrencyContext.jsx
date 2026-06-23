@@ -1,5 +1,5 @@
 // src/context/CurrencyContext.jsx
-import { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState, useEffect } from 'react'
 import { useAuth } from './AuthContext'
 import { getCurrency } from '../utils/currencies'
 

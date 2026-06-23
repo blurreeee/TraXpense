@@ -28,32 +28,32 @@ public class EncryptedResponseAdvice implements ResponseBodyAdvice<Object> {
 
     @Override
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
-                                  Class<? extends HttpMessageConverter<?>> selectedConverterType,
-                                  ServerHttpRequest request, ServerHttpResponse response) {
+            Class<? extends HttpMessageConverter<?>> selectedConverterType,
+            ServerHttpRequest request, ServerHttpResponse response) {
 
         if (response instanceof ServletServerHttpResponse) {
             int status = ((ServletServerHttpResponse) response).getServletResponse().getStatus();
-            
+
             // Only encrypt successful responses (2xx)
             if (status >= 200 && status < 300) {
-                // If it's already a map with our payload, skip to prevent double encryption
-                if (body instanceof Map && ((Map<?, ?>) body).containsKey("payload")) {
+                // If it's already a map with our response, skip to prevent double encryption
+                if (body instanceof Map && ((Map<?, ?>) body).containsKey("response")) {
                     return body;
                 }
-                
+
                 try {
                     String jsonString = objectMapper.writeValueAsString(body);
                     String encrypted = EncryptionUtil.encrypt(jsonString);
-                    
+
                     Map<String, String> wrappedResponse = new HashMap<>();
-                    wrappedResponse.put("payload", encrypted);
+                    wrappedResponse.put("response", encrypted);
                     return wrappedResponse;
                 } catch (Exception e) {
                     throw new RuntimeException("Failed to encrypt response", e);
                 }
             }
         }
-        
+
         return body;
     }
 }

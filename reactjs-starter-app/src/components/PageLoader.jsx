@@ -1,3 +1,4 @@
+import React from "react";
 import RupeeLoader from './RupeeLoader'
 
 export default function PageLoader({ size = 140, fullScreen = false }) {

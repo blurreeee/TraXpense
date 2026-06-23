@@ -5,7 +5,7 @@ const originalFetch = window.fetch;
 window.fetch = async function (...args) {
   const response = await originalFetch.apply(this, args);
 
-  // We only intercept successful JSON responses that contain 'payload'
+  // We only intercept successful JSON responses that contain 'response'
   if (response.ok) {
     // Clone the response so we can read it, but leave original intact if we don't intercept
     const clone = response.clone();
@@ -17,9 +17,9 @@ window.fetch = async function (...args) {
         const text = await clone.text();
         if (text) {
           const json = JSON.parse(text);
-          if (json && typeof json === 'object' && json.payload) {
+          if (json && typeof json === 'object' && json.response) {
             // It's our encrypted response!
-            const decryptedData = decryptPayload(json.payload);
+            const decryptedData = decryptPayload(json.response);
             
             // Return a new response object that overrides the json() method
             return new Response(JSON.stringify(decryptedData), {
@@ -36,6 +36,6 @@ window.fetch = async function (...args) {
     }
   }
 
-  // If it's an error, or not our encrypted payload, just return the original response
+  // If it's an error, or not our encrypted response, just return the original response
   return response;
 };

@@ -45,14 +45,21 @@ export function useExchangeRates(defaultCurrencyCode) {
 
     fetch(`/api/rates/latest?from=${defaultCurrencyCode}`)
       .then(res => {
-        if (!res.ok) throw new Error(`Frankfurter API error: ${res.status}`)
+        if (!res.ok) throw new Error(`ExchangeRate-API error: ${res.status}`)
         return res.json()
       })
       .then(data => {
         if (cancelled) return
-        // data.rates: { USD: 0.0106, EUR: 0.00924, ... }
+        
+        if (data.result === 'error') {
+          throw new Error(data['error-type'] || 'Unknown ExchangeRate-API error')
+        }
+
+        // data.conversion_rates: { USD: 1, EUR: 0.92, ... }
+        const apiRates = data.conversion_rates || data.rates || {}
+        
         // Add identity so we don't need a special case for same-currency expenses
-        const fullRates = { ...data.rates, [defaultCurrencyCode]: 1 }
+        const fullRates = { ...apiRates, [defaultCurrencyCode]: 1 }
         ratesCache[cacheKey] = fullRates
         setRates(fullRates)
         setRatesLoading(false)

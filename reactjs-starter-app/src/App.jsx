@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { ConfigProvider, theme as antTheme } from 'antd'
 import { ThemeProvider, useTheme } from './context/ThemeContext'
@@ -9,6 +9,7 @@ import { AppLayout } from './components/AppLayout'
 import ProtectedRoute from './components/ProtectedRoute'
 import AdminRoute from './components/AdminRoute'
 import { LoginPage } from './pages/LoginPage'
+import { ResetPasswordPage } from './pages/ResetPasswordPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { ExpensesPage } from './pages/ExpensesPage'
 import { FeatureFlagsPage } from './pages/FeatureFlagsPage'
@@ -107,6 +108,7 @@ function AppContent() {
     <ConfigProvider theme={configTheme} spin={{ indicator: <RupeeLoader size={36} /> }}>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route
           path="/*"
           element={

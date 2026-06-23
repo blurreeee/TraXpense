@@ -1,5 +1,5 @@
 // src/components/CurrencySetupModal.jsx
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { Modal, Select, Button, Typography } from 'antd'
 import { GlobalOutlined } from '@ant-design/icons'
 import { CURRENCIES } from '../utils/currencies'

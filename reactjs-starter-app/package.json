@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^6.2.5",
+    "@emailjs/browser": "^4.4.1",
     "antd": "^6.4.3",
     "crypto-js": "^4.2.0",
     "react": "^18.3.1",

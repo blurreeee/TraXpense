@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useLayoutEffect, useEffect } from 'react'
+import React, { createContext, useContext, useState, useLayoutEffect, useEffect } from 'react'
 import { useAuth } from './AuthContext'
 
 const ThemeContext = createContext({ isDark: true, toggleTheme: () => {} })

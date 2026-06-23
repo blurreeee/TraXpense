@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useMemo } from 'react'
 import { Typography, Select, Button } from 'antd'
 import { PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts'

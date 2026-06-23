@@ -1,0 +1,91 @@
+{
+  "hash": "2ace14fe",
+  "configHash": "a0591a87",
+  "lockfileHash": "566bed87",
+  "browserHash": "904e186f",
+  "optimized": {
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "991a9d3d",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "973f2dc6",
+      "needsInterop": true
+    },
+    "react-router-dom": {
+      "src": "../../node_modules/react-router-dom/dist/index.mjs",
+      "file": "react-router-dom.js",
+      "fileHash": "61f2fbf0",
+      "needsInterop": false
+    },
+    "crypto-js": {
+      "src": "../../node_modules/crypto-js/index.js",
+      "file": "crypto-js.js",
+      "fileHash": "71013e0a",
+      "needsInterop": true
+    },
+    "antd": {
+      "src": "../../node_modules/antd/es/index.js",
+      "file": "antd.js",
+      "fileHash": "80d3e279",
+      "needsInterop": false
+    },
+    "@ant-design/icons": {
+      "src": "../../node_modules/@ant-design/icons/es/index.js",
+      "file": "@ant-design_icons.js",
+      "fileHash": "ec3c0c88",
+      "needsInterop": false
+    },
+    "@emailjs/browser": {
+      "src": "../../node_modules/@emailjs/browser/es/index.js",
+      "file": "@emailjs_browser.js",
+      "fileHash": "15c03bcc",
+      "needsInterop": false
+    },
+    "dayjs": {
+      "src": "../../node_modules/dayjs/dayjs.min.js",
+      "file": "dayjs.js",
+      "fileHash": "7a2f7625",
+      "needsInterop": true
+    },
+    "dayjs/plugin/relativeTime": {
+      "src": "../../node_modules/dayjs/plugin/relativeTime.js",
+      "file": "dayjs_plugin_relativeTime.js",
+      "fileHash": "ae72f240",
+      "needsInterop": true
+    },
+    "recharts": {
+      "src": "../../node_modules/recharts/es6/index.js",
+      "file": "recharts.js",
+      "fileHash": "bdea2912",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-BUP6RJPS": {
+      "file": "chunk-BUP6RJPS.js"
+    },
+    "chunk-LGUFFW2A": {
+      "file": "chunk-LGUFFW2A.js"
+    },
+    "chunk-HOY74XNA": {
+      "file": "chunk-HOY74XNA.js"
+    },
+    "chunk-E2KS3465": {
+      "file": "chunk-E2KS3465.js"
+    },
+    "chunk-H27U5RJN": {
+      "file": "chunk-H27U5RJN.js"
+    },
+    "chunk-3EJWB6Y4": {
+      "file": "chunk-3EJWB6Y4.js"
+    },
+    "chunk-H265ZCLP": {
+      "file": "chunk-H265ZCLP.js"
+    }
+  }
+}
