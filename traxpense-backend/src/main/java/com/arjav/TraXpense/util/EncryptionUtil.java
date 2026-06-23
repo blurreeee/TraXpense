@@ -20,4 +20,16 @@ public class EncryptionUtil {
             throw new RuntimeException("Error encrypting payload", e);
         }
     }
+
+    public static String decrypt(String encryptedInput) {
+        try {
+            SecretKeySpec secretKey = new SecretKeySpec(KEY.getBytes("UTF-8"), ALGORITHM);
+            Cipher cipher = Cipher.getInstance(TRANSFORMATION);
+            cipher.init(Cipher.DECRYPT_MODE, secretKey);
+            byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(encryptedInput));
+            return new String(decryptedBytes, "UTF-8");
+        } catch (Exception e) {
+            throw new RuntimeException("Error decrypting payload", e);
+        }
+    }
 }
