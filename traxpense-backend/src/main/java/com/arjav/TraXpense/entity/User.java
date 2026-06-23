@@ -33,7 +33,11 @@ public class User {
     @Column(name = "username_changed_at")
     private LocalDateTime usernameChangedAt;
 
-    public User() {}
+    @Column(nullable = false, length = 20, columnDefinition = "varchar(20) default 'USER'")
+    private String role = "USER";
+
+    public User() {
+    }
 
     public User(String name, String username, String email, String password) {
         this.name = name;
@@ -104,5 +108,13 @@ public class User {
 
     public void setUsernameChangedAt(LocalDateTime usernameChangedAt) {
         this.usernameChangedAt = usernameChangedAt;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

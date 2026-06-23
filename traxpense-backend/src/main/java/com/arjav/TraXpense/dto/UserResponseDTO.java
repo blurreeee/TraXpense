@@ -12,6 +12,7 @@ public class UserResponseDTO {
     private Boolean isDarkTheme;
     private String defaultCurrency;
     private LocalDateTime usernameChangedAt;
+    private String role;
 
     public UserResponseDTO() {}
 
@@ -23,6 +24,7 @@ public class UserResponseDTO {
         this.isDarkTheme = user.getIsDarkTheme();
         this.defaultCurrency = user.getDefaultCurrency();
         this.usernameChangedAt = user.getUsernameChangedAt();
+        this.role = user.getRole();
     }
 
     public Long getId() {
@@ -79,5 +81,13 @@ public class UserResponseDTO {
 
     public void setUsernameChangedAt(LocalDateTime usernameChangedAt) {
         this.usernameChangedAt = usernameChangedAt;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

@@ -12,6 +12,7 @@ import { useCurrency } from '../context/CurrencyContext'
 import { useExchangeRates } from '../hooks/useExchangeRates'
 import { ExpenseModal } from '../components/ExpenseModal'
 import { ExpenseList } from '../components/ExpenseList'
+import { useFeatureFlag } from '../context/FeatureFlagContext'
 
 const { Title, Text } = Typography
 
@@ -43,6 +44,8 @@ export function ExpensesPage() {
   const { expenses, loading, addExpense, updateExpense, deleteExpense, importExpense } = useExpenses(user?.id)
   const { currency } = useCurrency()
   const { convertToDefault, ratesLoading } = useExchangeRates(currency.code)
+  const isFeatureEnabled = useFeatureFlag()
+  const isImportReceiptEnabled = isFeatureEnabled('import_receipt')
   const location = useLocation()
   const [modalOpen, setModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState('add')
@@ -154,30 +157,32 @@ export function ExpensesPage() {
           >
             Add Expense
           </Button>
-          <div style={{ position: 'relative', display: 'inline-flex' }}>
-            <Upload
-              accept="image/*"
-              showUploadList={false}
-              beforeUpload={async (file) => {
-                const hide = messageApi.loading('Importing receipt...', 0);
-                const result = await importExpense(file);
-                hide();
-                if (result && result.length > 0) {
-                  messageApi.success(`Successfully imported ${result.length} transaction(s)!`);
-                } else if (result && result.length === 0) {
-                  messageApi.warning('No new transactions found (all duplicates or nothing extracted).');
-                } else {
-                  messageApi.error('Failed to import receipt. Please try again.');
-                }
-                return false; // Prevent default antd upload behavior
-              }}
-            >
-              <Button icon={<UploadOutlined />} size="large" className="import-expense-btn">
-                Import Receipt
-              </Button>
-            </Upload>
-            <span className="beta-badge">BETA</span>
-          </div>
+          {isImportReceiptEnabled && (
+            <div style={{ position: 'relative', display: 'inline-flex' }}>
+              <Upload
+                accept="image/*"
+                showUploadList={false}
+                beforeUpload={async (file) => {
+                  const hide = messageApi.loading('Importing receipt...', 0);
+                  const result = await importExpense(file);
+                  hide();
+                  if (result && result.length > 0) {
+                    messageApi.success(`Successfully imported ${result.length} transaction(s)!`);
+                  } else if (result && result.length === 0) {
+                    messageApi.warning('No new transactions found (all duplicates or nothing extracted).');
+                  } else {
+                    messageApi.error('Failed to import receipt. Please try again.');
+                  }
+                  return false; // Prevent default antd upload behavior
+                }}
+              >
+                <Button icon={<UploadOutlined />} size="large" className="import-expense-btn">
+                  Import Receipt
+                </Button>
+              </Upload>
+              <span className="beta-badge">BETA</span>
+            </div>
+          )}
         </div>
 
         <div className="action-bar-right" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>

