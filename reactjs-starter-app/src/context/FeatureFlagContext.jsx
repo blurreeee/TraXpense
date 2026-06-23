@@ -19,7 +19,7 @@ export function FeatureFlagProvider({ children }) {
 
     const fetchFlags = async () => {
       try {
-        const response = await fetch('http://localhost:8080/api/feature-flags')
+        const response = await fetch('/api/feature-flags')
         if (!response.ok) {
           throw new Error('Failed to fetch feature flags')
         }
@@ -48,7 +48,7 @@ export function FeatureFlagProvider({ children }) {
   // Update a flag locally and via API
   const toggleFlag = async (flagKey, enabled) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/feature-flags/${flagKey}?enabled=${enabled}`, {
+      const response = await fetch(`/api/feature-flags/${flagKey}?enabled=${enabled}`, {
         method: 'PUT',
       })
       if (!response.ok) throw new Error('Failed to update flag')
