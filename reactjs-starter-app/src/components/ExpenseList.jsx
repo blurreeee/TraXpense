@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useEffect, useMemo, useRef } from 'react'
-import { List, Pagination, Empty, Typography, Dropdown } from 'antd'
+import { List, Pagination, Empty, Typography, Dropdown, Spin } from 'antd'
 import {
   CalendarOutlined,
   FileTextOutlined,
@@ -11,10 +11,13 @@ import {
   AppstoreOutlined,
   UpOutlined,
   DownOutlined,
+  LoadingOutlined,
 } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import RupeeLoader from './RupeeLoader'
 import { getCurrency } from '../utils/currencies'
+import { useCurrency } from '../context/CurrencyContext'
+import { useExchangeRates } from '../hooks/useExchangeRates'
 
 const { Text } = Typography
 
@@ -51,6 +54,9 @@ function getAmountTierClass(amount) {
  *   onRowClick  {(expense) => void}
  */
 export function ExpenseList({ expenses, loading, onRowClick, initialAmountSortOrder = 'default', initialDateSortOrder = 'desc' }) {
+  const { currency: defaultCurrency } = useCurrency()
+  const { convertToDefault, ratesLoading } = useExchangeRates(defaultCurrency.code)
+
   const [currentPage, setCurrentPage] = useState(1)
   const [amountSortOrder, setAmountSortOrder] = useState(initialAmountSortOrder)
   const [dateSortOrder, setDateSortOrder] = useState(initialDateSortOrder)
@@ -264,9 +270,21 @@ export function ExpenseList({ expenses, loading, onRowClick, initialAmountSortOr
                       )
                     })()}
                   </div>
-                  {item.note && (
-                    <FileTextOutlined className="note-indicator" />
+                  {item.currency && item.currency !== defaultCurrency.code && (
+                    <div className="expense-amount-converted" style={{ color: 'gray', fontSize: '0.85em', marginTop: '4px', textAlign: 'right' }}>
+                      {ratesLoading ? (
+                        <Spin indicator={<LoadingOutlined style={{ fontSize: 12, color: 'gray' }} spin />} />
+                      ) : (
+                        (() => {
+                          const converted = convertToDefault(Number(item.amount), item.currency);
+                          if (converted == null) return null;
+                          const isNeg = converted < 0;
+                          return `≈ ${isNeg ? '+' : ''}${defaultCurrency.symbol}${Math.abs(converted).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                        })()
+                      )}
+                    </div>
                   )}
+
                 </div>
               </div>
             </List.Item>

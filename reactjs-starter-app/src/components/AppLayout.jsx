@@ -123,6 +123,7 @@ export function AppLayout({ children }) {
           <div>
             <Text className="popover-username">{user?.name || 'User'}</Text>
             <Text className="popover-role">@{user?.username || 'user'}</Text>
+            {user?.email && <Text className="popover-role">{user.email}</Text>}
           </div>
         </div>
       ),

@@ -56,11 +56,11 @@ public class AuthController {
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordDTO dto) {
         try {
-            Map<String, String> resetData = passwordResetService.requestPasswordReset(dto.getEmail());
+            Map<String, String> resetData = passwordResetService.requestPasswordReset(dto.getIdentifier());
             if (resetData != null) {
                 // Return reset data so frontend can send email via EmailJS
                 Map<String, Object> response = new HashMap<>();
-                response.put("message", "If an account with that email exists, a password reset link has been sent.");
+                response.put("message", "If an account with that information exists, a password reset link has been sent.");
                 response.put("resetData", resetData);
                 return ResponseEntity.ok(response);
             }
@@ -68,7 +68,7 @@ public class AuthController {
             // Log internally but don't expose errors to avoid email enumeration
         }
         // Always return success to prevent email enumeration attacks
-        return ResponseEntity.ok(Map.of("message", "If an account with that email exists, a password reset link has been sent."));
+        return ResponseEntity.ok(Map.of("message", "If an account with that information exists, a password reset link has been sent."));
     }
 
     @PostMapping("/reset-password")

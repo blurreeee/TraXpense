@@ -88,6 +88,15 @@ export function ExpensesPage() {
     return result
   }, [expenses, selectedMonth, selectedYear])
 
+  const defaultDateForNewExpense = useMemo(() => {
+    if (!selectedMonth || !selectedYear) return dayjs()
+    const now = dayjs()
+    if (now.format('MM') === selectedMonth && now.format('YYYY') === selectedYear) {
+      return now
+    }
+    return dayjs(`${selectedYear}-${selectedMonth}-01`)
+  }, [selectedMonth, selectedYear])
+
   const grandTotal = useMemo(() => {
     return filteredExpenses.reduce((sum, e) => {
       const converted = convertToDefault(Number(e.amount), e.currency || 'INR')
@@ -231,6 +240,7 @@ export function ExpensesPage() {
         onSave={handleSave}
         onDelete={handleDelete}
         onCancel={() => setModalOpen(false)}
+        defaultDate={defaultDateForNewExpense}
       />
     </div>
   )

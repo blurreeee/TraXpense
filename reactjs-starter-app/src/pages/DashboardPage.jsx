@@ -155,10 +155,24 @@ export function DashboardPage() {
 
     return MONTHS.map((m, index) => {
       const monthVal = m.label.substring(0, 3)
-      const isFuture = lineYear === currentYear && index > parseInt(currentMonth, 10) - 1
+      
+      const isFutureYear = parseInt(lineYear, 10) > parseInt(currentYear, 10)
+      const isPastYear = parseInt(lineYear, 10) < parseInt(currentYear, 10)
+      
+      let isFuture = false
+      let isCurrentMonth = false
+      
+      if (isFutureYear) {
+        isFuture = true
+      } else if (!isPastYear) {
+        isFuture = index > parseInt(currentMonth, 10) - 1
+        isCurrentMonth = index === parseInt(currentMonth, 10) - 1
+      }
+      
       return {
         month: monthVal,
-        total: isFuture ? null : monthlyTotals[monthVal]
+        total: isFuture ? null : monthlyTotals[monthVal],
+        futureTotal: (isFuture || isCurrentMonth) ? monthlyTotals[monthVal] : null
       }
     })
   }, [expenses, lineYear, currentYear, currentMonth, convertToDefault])
@@ -399,6 +413,16 @@ export function DashboardPage() {
                   dataKey="total"
                   stroke="#10b981"
                   strokeWidth={3}
+                  connectNulls={false}
+                  activeDot={false}
+                  dot={<CustomDot setHoveredLineNode={setHoveredLineNode} />}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="futureTotal"
+                  stroke="#10b981"
+                  strokeWidth={3}
+                  strokeDasharray="5 5"
                   connectNulls={false}
                   activeDot={false}
                   dot={<CustomDot setHoveredLineNode={setHoveredLineNode} />}

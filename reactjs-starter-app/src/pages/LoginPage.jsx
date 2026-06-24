@@ -20,6 +20,10 @@ export function LoginPage() {
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
 
+  const [loginForm] = Form.useForm();
+  const [registerForm] = Form.useForm();
+  const [forgotPasswordForm] = Form.useForm();
+
   if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
   }
@@ -44,14 +48,14 @@ export function LoginPage() {
     setLoading(false);
   };
 
-  const onFinishForgotPassword = async ({ email }) => {
+  const onFinishForgotPassword = async ({ identifier }) => {
     setLoading(true);
     setError('');
     try {
       const response = await fetch('/api/auth/forgot-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ identifier }),
       });
       if (response.ok) {
         const data = await response.json().catch(() => null);
@@ -95,6 +99,7 @@ export function LoginPage() {
     setIsForgotPassword(false);
     setResetEmailSent(false);
     setError('');
+    loginForm.resetFields();
   };
 
   // ── Forgot Password View ──────────────────────────────────
@@ -115,7 +120,7 @@ export function LoginPage() {
               </div>
               <Title level={4} style={{ margin: 0, textAlign: 'center' }}>Check Your Email</Title>
               <Text type="secondary" style={{ textAlign: 'center', display: 'block', marginTop: 8, lineHeight: 1.6 }}>
-                If an account with that email exists, we've sent a password reset link. Please check your inbox and spam folder.
+                If an account with that information exists, we've sent a password reset link. Please check your inbox and spam folder.
               </Text>
               <Button
                 type="primary"
@@ -131,19 +136,18 @@ export function LoginPage() {
               <div style={{ marginBottom: 24 }}>
                 <Title level={4} style={{ margin: 0 }}>Forgot Password?</Title>
                 <Text type="secondary" style={{ display: 'block', marginTop: 6, lineHeight: 1.5 }}>
-                  Enter your email address and we'll send you a link to reset your password.
+                  Enter your email or username and we'll send you a link to reset your password.
                 </Text>
               </div>
-              <Form layout="vertical" onFinish={onFinishForgotPassword} style={{ width: '100%' }}>
+              <Form form={forgotPasswordForm} layout="vertical" onFinish={onFinishForgotPassword} style={{ width: '100%' }}>
                 <Form.Item
-                  name="email"
-                  label="Email Address"
+                  name="identifier"
+                  label="Email or Username"
                   rules={[
-                    { required: true, message: 'Please enter your email!' },
-                    { type: 'email', message: 'Please enter a valid email!' },
+                    { required: true, message: 'Please enter your email or username!' },
                   ]}
                 >
-                  <Input placeholder="Enter your email" />
+                  <Input placeholder="Enter your email or username" />
                 </Form.Item>
 
                 {error && <Text type="danger" style={{ display: 'block', marginBottom: 16 }}>{error}</Text>}
@@ -187,7 +191,7 @@ export function LoginPage() {
           <Title level={3} className="login-title">TraXpenses</Title>
         </div>
         {!isRegistering ? (
-          <Form layout="vertical" onFinish={onFinishLogin} style={{ width: '100%' }}>
+          <Form key="login-form" form={loginForm} layout="vertical" onFinish={onFinishLogin} style={{ width: '100%' }}>
             <Form.Item name="username" label="Email or Username" rules={[{ required: true, message: 'Please input your Email or Username!' }]}>
               <Input placeholder="Email or Username" />
             </Form.Item>
@@ -196,7 +200,7 @@ export function LoginPage() {
             </Form.Item>
 
             <div className="forgot-pw-link-wrapper">
-              <Link onClick={() => { setIsForgotPassword(true); setError(''); }}>
+              <Link onClick={() => { setIsForgotPassword(true); setError(''); forgotPasswordForm.resetFields(); }}>
                 Forgot Password?
               </Link>
             </div>
@@ -210,22 +214,22 @@ export function LoginPage() {
             </Form.Item>
             <div style={{ textAlign: 'center' }}>
               <Text>Don't have an account? </Text>
-              <Link onClick={() => { setIsRegistering(true); setError(''); }}>Register</Link>
+              <Link onClick={() => { setIsRegistering(true); setError(''); registerForm.resetFields(); loginForm.resetFields(); }}>Register</Link>
             </div>
           </Form>
         ) : (
-          <Form layout="vertical" onFinish={onFinishRegister} style={{ width: '100%' }}>
+          <Form key="register-form" form={registerForm} layout="vertical" onFinish={onFinishRegister} style={{ width: '100%' }} autoComplete="off">
             <Form.Item name="name" label="Name" rules={[{ required: true }]}>
-              <Input placeholder="Full Name" />
+              <Input placeholder="Full Name" autoComplete="off" />
             </Form.Item>
             <Form.Item name="username" label="Username" rules={[{ required: true }]}>
-              <Input placeholder="Username" />
+              <Input placeholder="Username" autoComplete="off" />
             </Form.Item>
             <Form.Item name="email" label="Email" rules={[{ required: true, type: 'email' }]}>
-              <Input placeholder="Email" />
+              <Input placeholder="Email" autoComplete="off" />
             </Form.Item>
             <Form.Item name="password" label="Password" rules={[{ required: true, min: 6 }]}>
-              <Input.Password placeholder="Password" />
+              <Input.Password placeholder="Password" autoComplete="new-password" />
             </Form.Item>
 
             {error && <Text type="danger" style={{ display: 'block', marginBottom: 16 }}>{error}</Text>}
@@ -237,7 +241,7 @@ export function LoginPage() {
             </Form.Item>
             <div style={{ textAlign: 'center' }}>
               <Text>Already have an account? </Text>
-              <Link onClick={() => { setIsRegistering(false); setError(''); }}>Login</Link>
+              <Link onClick={() => { setIsRegistering(false); setError(''); loginForm.resetFields(); }}>Login</Link>
             </div>
           </Form>
         )}

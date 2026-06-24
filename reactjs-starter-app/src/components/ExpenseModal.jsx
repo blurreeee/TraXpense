@@ -68,7 +68,7 @@ const CURRENCY_OPTIONS = CURRENCIES.map(c => ({
  *   onDelete   {() => void}
  *   onCancel   {() => void}
  */
-export function ExpenseModal({ open, mode, expense, onSave, onDelete, onCancel }) {
+export function ExpenseModal({ open, mode, expense, onSave, onDelete, onCancel, defaultDate }) {
   const [form] = Form.useForm()
   const isEdit = mode === 'edit'
   const [loading, setLoading] = useState(false)
@@ -94,10 +94,13 @@ export function ExpenseModal({ open, mode, expense, onSave, onDelete, onCancel }
         setIsRefund(false)
         setSelectedCurrency(defaultCurrency.code)
         form.resetFields()
-        form.setFieldsValue({ currency: defaultCurrency.code })
+        form.setFieldsValue({ 
+          currency: defaultCurrency.code,
+          date: defaultDate || dayjs()
+        })
       }
     }
-  }, [open, isEdit, expense, form, defaultCurrency.code])
+  }, [open, isEdit, expense, form, defaultCurrency.code, defaultDate])
 
   const currentCurrencyInfo = CURRENCIES.find(c => c.code === selectedCurrency) || defaultCurrency
 

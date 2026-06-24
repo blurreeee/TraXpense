@@ -24,14 +24,18 @@ public class PasswordResetService {
     }
 
     /**
-     * Generates a password reset token for the given email.
+     * Generates a password reset token for the given email or username.
      * Returns reset data (link, name, email) if user found, null otherwise.
      * The caller (frontend) is responsible for sending the email via EmailJS.
      */
-    public Map<String, String> requestPasswordReset(String email) {
-        Optional<User> userOpt = userRepository.findByEmail(email);
+    public Map<String, String> requestPasswordReset(String identifier) {
+        Optional<User> userOpt = userRepository.findByEmail(identifier);
         if (userOpt.isEmpty()) {
-            // Don't reveal whether the email exists — return null
+            userOpt = userRepository.findByUsername(identifier);
+        }
+
+        if (userOpt.isEmpty()) {
+            // Don't reveal whether the user exists — return null
             return null;
         }
 
