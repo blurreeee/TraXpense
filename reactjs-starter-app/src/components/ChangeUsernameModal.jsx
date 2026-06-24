@@ -14,6 +14,7 @@ export function ChangeUsernameModal({ open, user, onSave, onCancel }) {
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [inputValue, setInputValue] = useState(user?.username || '')
 
   const daysRemaining = useMemo(
     () => getDaysUntilUsernameChange(user?.usernameChangedAt),
@@ -24,6 +25,7 @@ export function ChangeUsernameModal({ open, user, onSave, onCancel }) {
   useEffect(() => {
     if (open) {
       form.setFieldsValue({ username: user?.username || '' })
+      setInputValue(user?.username || '')
       setError('')
     }
   }, [open, user?.username, form])
@@ -54,7 +56,7 @@ export function ChangeUsernameModal({ open, user, onSave, onCancel }) {
       onCancel={onCancel}
       okText="Save"
       confirmLoading={loading}
-      okButtonProps={{ disabled: isOnCooldown }}
+      okButtonProps={{ disabled: isOnCooldown || inputValue.trim() === (user?.username || '') }}
       destroyOnClose
     >
       {isOnCooldown && (
@@ -75,7 +77,15 @@ export function ChangeUsernameModal({ open, user, onSave, onCancel }) {
         />
       )}
 
-      <Form form={form} layout="vertical">
+      <Form 
+        form={form} 
+        layout="vertical"
+        onValuesChange={(changedValues) => {
+          if ('username' in changedValues) {
+            setInputValue(changedValues.username || '')
+          }
+        }}
+      >
         <Form.Item
           name="username"
           label="New Username"
