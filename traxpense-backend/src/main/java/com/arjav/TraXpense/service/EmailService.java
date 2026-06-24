@@ -22,6 +22,9 @@ public class EmailService {
     @Value("${emailjs.public-key}")
     private String publicKey;
 
+    @Value("${emailjs.private-key}")
+    private String privateKey;
+
     private final RestTemplate restTemplate;
 
     public EmailService() {
@@ -42,6 +45,7 @@ public class EmailService {
         payload.put("service_id", serviceId);
         payload.put("template_id", templateId);
         payload.put("user_id", publicKey);
+        payload.put("accessToken", privateKey);
         payload.put("template_params", templateParams);
 
         HttpHeaders headers = new HttpHeaders();
