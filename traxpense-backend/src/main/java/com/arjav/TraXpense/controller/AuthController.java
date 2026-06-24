@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -56,14 +55,8 @@ public class AuthController {
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordDTO dto) {
         try {
-            Map<String, String> resetData = passwordResetService.requestPasswordReset(dto.getIdentifier());
-            if (resetData != null) {
-                // Return reset data so frontend can send email via EmailJS
-                Map<String, Object> response = new HashMap<>();
-                response.put("message", "If an account with that information exists, a password reset link has been sent.");
-                response.put("resetData", resetData);
-                return ResponseEntity.ok(response);
-            }
+            // Email is now sent server-side to avoid CORS issues with EmailJS
+            passwordResetService.requestPasswordReset(dto.getIdentifier());
         } catch (RuntimeException e) {
             // Log internally but don't expose errors to avoid email enumeration
         }

@@ -7,7 +7,7 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import PageLoader from '../components/PageLoader';
-import emailjs from '@emailjs/browser';
+
 
 const { Title, Text, Link } = Typography;
 
@@ -58,32 +58,6 @@ export function LoginPage() {
         body: JSON.stringify({ identifier }),
       });
       if (response.ok) {
-        const data = await response.json().catch(() => null);
-        console.log('Forgot password response:', data);
-        // If reset data is returned, send email via EmailJS
-        if (data?.resetData) {
-          console.log('Sending email via EmailJS with data:', data.resetData);
-          try {
-            const result = await emailjs.send(
-              'service_l3kdsag',
-              'template_xkxfx3q',
-              {
-                to_name: data.resetData.userName,
-                email: data.resetData.userEmail,
-                link: data.resetData.resetLink,
-              },
-              'mU3oGmiLuMuV_ahZs'
-            );
-            console.log('EmailJS success:', result);
-          } catch (emailErr) {
-            console.error('EmailJS error:', emailErr);
-            setError('Failed to send reset email. Please try again.');
-            setLoading(false);
-            return;
-          }
-        } else {
-          console.log('No resetData in response — email may not exist');
-        }
         setResetEmailSent(true);
       } else {
         const errorData = await response.json().catch(() => null);

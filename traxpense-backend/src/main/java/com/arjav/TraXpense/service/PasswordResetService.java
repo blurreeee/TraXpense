@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,28 +13,30 @@ import java.util.UUID;
 public class PasswordResetService {
 
     private final UserRepository userRepository;
+    private final EmailService emailService;
 
     @Value("${app.frontend.url}")
     private String frontendUrl;
 
-    public PasswordResetService(UserRepository userRepository) {
+    public PasswordResetService(UserRepository userRepository, EmailService emailService) {
         this.userRepository = userRepository;
+        this.emailService = emailService;
     }
 
     /**
      * Generates a password reset token for the given email or username.
-     * Returns reset data (link, name, email) if user found, null otherwise.
-     * The caller (frontend) is responsible for sending the email via EmailJS.
+     * Sends the reset email server-side via EmailJS.
+     * Returns true if a user was found and email was sent, false otherwise.
      */
-    public Map<String, String> requestPasswordReset(String identifier) {
+    public boolean requestPasswordReset(String identifier) {
         Optional<User> userOpt = userRepository.findByEmail(identifier);
         if (userOpt.isEmpty()) {
             userOpt = userRepository.findByUsername(identifier);
         }
 
         if (userOpt.isEmpty()) {
-            // Don't reveal whether the user exists — return null
-            return null;
+            // Don't reveal whether the user exists
+            return false;
         }
 
         User user = userOpt.get();
@@ -47,11 +47,10 @@ public class PasswordResetService {
 
         String resetLink = frontendUrl + "/reset-password?token=" + token;
 
-        Map<String, String> resetData = new HashMap<>();
-        resetData.put("resetLink", resetLink);
-        resetData.put("userName", user.getName());
-        resetData.put("userEmail", user.getEmail());
-        return resetData;
+        // Send email server-side — avoids CORS issues
+        emailService.sendPasswordResetEmail(user.getName(), user.getEmail(), resetLink);
+
+        return true;
     }
 
     public void resetPassword(String token, String newPassword) {
